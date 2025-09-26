@@ -1,166 +1,433 @@
 ﻿<Window x:Class="AssetManagment.AssetsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Управление активами" 
-        Height="700" Width="1200"
+        Title="АКТИВ+ | Управление активами" 
+        Height="900" Width="1600"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource BackgroundBrush}">
+        Background="#F5F7FA">
+
+    <Window.Resources>
+        <!-- Локальные стили для этого окна -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#2C3E50"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="5" ShadowDepth="2"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#F8F9FA"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#3498DB"/>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#3498DB" Opacity="0.2" BlurRadius="8" ShadowDepth="2"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PrimaryActionButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="Background" Value="#3498DB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#2980B9"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DangerActionButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="Foreground" Value="#E74C3C"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FEF2F2"/>
+                    <Setter Property="BorderBrush" Value="#E74C3C"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="FilterChip" TargetType="Border">
+            <Setter Property="Background" Value="#EBF5FF"/>
+            <Setter Property="CornerRadius" Value="15"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
 
     <Grid>
+        <!-- Основной контейнер -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Верхняя панель -->
         <Border Grid.Row="0" Background="White" 
-                BorderBrush="{StaticResource BorderBrush}" 
-                BorderThickness="0,0,0,1">
-            <Grid Margin="30,20">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                Effect="{StaticResource CardShadow}">
+            <Grid Margin="40,25">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <!-- Заголовок -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="📦" FontSize="28" Margin="0,0,15,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="Управление активами" FontSize="24" FontWeight="SemiBold" 
-                             Foreground="{StaticResource TextPrimaryBrush}"/>
-                </StackPanel>
+                <!-- Первая строка - заголовок и основные действия -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                <!-- Панель действий -->
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <!-- Заголовок с хлебными крошками -->
+                    <StackPanel Grid.Column="0" Orientation="Vertical">
+                        <TextBlock FontSize="14" Foreground="#7F8C8D" Margin="0,0,0,5">
+                            <Run Text="АКТИВ+" Foreground="#3498DB" FontWeight="Medium" Cursor="Hand"/>
+                            <Run Text=" / "/>
+                            <Run Text="Управление активами"/>
+                        </TextBlock>
+                        <StackPanel Orientation="Horizontal">
+                            <Border Background="#EBF5FF" CornerRadius="12" Padding="12,8" Margin="0,0,15,0">
+                                <TextBlock Text="📦" FontSize="32"/>
+                            </Border>
+                            <TextBlock Text="Управление активами" 
+                                     FontSize="32" 
+                                     FontWeight="SemiBold" 
+                                     Foreground="#2C3E50"
+                                     VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Основные действия -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom">
+                        <Button Style="{StaticResource PrimaryActionButton}" Click="BtnAdd_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="➕" FontSize="16" Margin="0,0,8,0"/>
+                                <TextBlock Text="Новый актив"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource ActionButton}" Click="BtnEdit_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="✏️" FontSize="16" Margin="0,0,8,0"/>
+                                <TextBlock Text="Изменить"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource DangerActionButton}" Click="BtnDelete_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🗑️" FontSize="16" Margin="0,0,8,0"/>
+                                <TextBlock Text="Удалить"/>
+                            </StackPanel>
+                        </Button>
+                        <Border Width="1" Background="#E0E0E0" Margin="15,0"/>
+                        <Button Style="{StaticResource ActionButton}" Click="BtnExport_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📥" FontSize="16" Margin="0,0,8,0"/>
+                                <TextBlock Text="Экспорт"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Вторая строка - поиск и фильтры -->
+                <Grid Grid.Row="1" Margin="0,25,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="400"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
                     <!-- Поиск -->
-                    <Border Background="#F8F9FA" CornerRadius="20" Margin="0,0,15,0">
+                    <Border Grid.Column="0" Background="#F8F9FA" CornerRadius="25">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="250"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="🔍" Grid.Column="0" 
-                                     VerticalAlignment="Center" 
-                                     Margin="15,0,5,0" 
-                                     Foreground="{StaticResource TextSecondaryBrush}"/>
-                            <TextBox x:Name="txtSearch" Grid.Column="1" 
-                                   Background="Transparent"
-                                   BorderThickness="0"
-                                   VerticalAlignment="Center"
-                                   Padding="5,10,15,10"
-                                   FontSize="14"
-                                   Foreground="{StaticResource TextPrimaryBrush}"
-                                   TextChanged="TxtSearch_TextChanged">
-                                <TextBox.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="20"/>
-                                    </Style>
-                                </TextBox.Resources>
-                            </TextBox>
-                        </Grid>
-                    </Border>
-
-                    <!-- Кнопки действий -->
-                    <Button Style="{StaticResource PrimaryButton}" Click="BtnAdd_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="➕" Margin="0,0,8,0"/>
-                            <TextBlock Text="Добавить"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource SecondaryButton}" Click="BtnEdit_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="✏️" Margin="0,0,8,0"/>
-                            <TextBlock Text="Изменить"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource DangerButton}" Click="BtnDelete_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🗑️" Margin="0,0,8,0"/>
-                            <TextBlock Text="Удалить"/>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-            </Grid>
-        </Border>
-
-        <!-- Основной контент -->
-        <Grid Grid.Row="1" Margin="20">
-            <Border Style="{StaticResource DashboardCard}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Заголовок таблицы с счетчиком -->
-                    <Border Grid.Row="0" Background="#FAFBFC" 
-                            CornerRadius="10,10,0,0" 
-                            BorderBrush="{StaticResource BorderBrush}"
-                            BorderThickness="0,0,0,1">
-                        <Grid Margin="20,15">
-                            <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                <TextBlock Text="Список активов" FontSize="16" FontWeight="SemiBold" 
-                                         Foreground="{StaticResource TextPrimaryBrush}"/>
-                                <Border Background="{StaticResource PrimaryBrush}" 
-                                        CornerRadius="10" 
-                                        Padding="10,3" 
-                                        Margin="15,0,0,0">
-                                    <TextBlock Foreground="White" FontSize="12" FontWeight="Medium">
-                                        <Run Text="{Binding ElementName=dgAssets, Path=Items.Count}"/>
-                                        <Run Text="записей"/>
-                                    </TextBlock>
-                                </Border>
-                            </StackPanel>
+                            <TextBlock Text="🔍" Grid.Column="0" 
+                                     VerticalAlignment="Center" 
+                                     Margin="20,0,10,0" 
+                                     FontSize="18"
+                                     Foreground="#7F8C8D"/>
 
-                            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <Button Content="🔄 Обновить" 
-                                        Background="Transparent"
-                                        BorderThickness="0"
-                                        Foreground="{StaticResource TextSecondaryBrush}"
-                                        Cursor="Hand"
-                                        Click="BtnRefresh_Click"/>
-                                <Button Content="📥 Экспорт" 
-                                        Background="Transparent"
-                                        BorderThickness="0"
-                                        Foreground="{StaticResource TextSecondaryBrush}"
-                                        Cursor="Hand"
-                                        Margin="10,0,0,0"/>
-                            </StackPanel>
+                            <TextBox x:Name="txtSearch" Grid.Column="1" 
+                                   Background="Transparent"
+                                   BorderThickness="0"
+                                   VerticalAlignment="Center"
+                                   Padding="0,12"
+                                   FontSize="15"
+                                   Foreground="#2C3E50"
+                                   VerticalContentAlignment="Center"
+                                   TextChanged="TxtSearch_TextChanged">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="TextBox">
+                                                    <Grid>
+                                                        <ScrollViewer x:Name="PART_ContentHost" 
+                                                                    VerticalAlignment="Center"/>
+                                                        <TextBlock Text="Поиск по коду, названию, категории..." 
+                                                                 Foreground="#BDC3C7"
+                                                                 VerticalAlignment="Center"
+                                                                 IsHitTestVisible="False"
+                                                                 FontSize="15">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}" Value="">
+                                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+
+                            <Button Grid.Column="2" 
+                                    Content="✕" 
+                                    FontSize="16"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Foreground="#7F8C8D"
+                                    Margin="0,0,15,0"
+                                    Cursor="Hand"
+                                    Click="BtnClearSearch_Click"
+                                    Visibility="Collapsed"
+                                    x:Name="btnClearSearch"/>
                         </Grid>
                     </Border>
 
+                    <!-- Быстрые фильтры -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="20,0,0,0">
+                        <TextBlock Text="Фильтры:" 
+                                 Foreground="#7F8C8D" 
+                                 VerticalAlignment="Center"
+                                 Margin="0,0,10,0"/>
+
+                        <Border Style="{StaticResource FilterChip}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="✅" Margin="0,0,5,0"/>
+                                <TextBlock Text="Активные" FontWeight="Medium" Foreground="#3498DB"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource FilterChip}" Background="#FFF4E6">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🔧" Margin="0,0,5,0"/>
+                                <TextBlock Text="На ремонте" FontWeight="Medium" Foreground="#F39C12"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource FilterChip}" Background="Transparent" 
+                                BorderBrush="#E0E0E0" BorderThickness="1">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🏢" Margin="0,0,5,0"/>
+                                <TextBlock Text="Все локации" Foreground="#7F8C8D"/>
+                                <TextBlock Text=" ▼" FontSize="10" Foreground="#7F8C8D" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Статистика -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Border Background="#F8F9FA" CornerRadius="20" Padding="20,10">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Найдено: " FontSize="14" Foreground="#7F8C8D"/>
+                                <TextBlock Text="{Binding ElementName=dgAssets, Path=Items.Count}" FontWeight="Bold" FontSize="18" Foreground="#2C3E50"/>
+                                <TextBlock Text=" активов" FontSize="14" Foreground="#7F8C8D" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Button Content="🔄" 
+                                FontSize="20" 
+                                Background="White"
+                                BorderBrush="#E0E0E0"
+                                BorderThickness="1"
+                                Width="40"
+                                Height="40"
+                                Margin="10,0,0,0"
+                                ToolTip="Обновить данные"
+                                Click="BtnRefresh_Click">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="20">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                        VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- Основной контент -->
+        <Grid Grid.Row="1" Margin="40,30">
+            <Border Background="White" CornerRadius="12" 
+                    Effect="{StaticResource CardShadow}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
                     <!-- Таблица данных -->
                     <DataGrid x:Name="dgAssets" 
-                              Grid.Row="1"
-                              Style="{StaticResource ModernDataGrid}"
-                              ColumnHeaderStyle="{StaticResource ModernDataGridColumnHeader}"
-                              RowStyle="{StaticResource ModernDataGridRow}"
+                              Grid.Row="0"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              GridLinesVisibility="None"
+                              HeadersVisibility="Column"
+                              BorderThickness="0"
+                              Background="Transparent"
+                              RowBackground="White"
+                              AlternatingRowBackground="#FAFBFC"
                               SelectionMode="Single"
                               SelectionUnit="FullRow"
-                              Margin="0">
+                              RowHeight="60"
+                              Margin="0,0,0,0">
+
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="#F8F9FA"/>
+                                <Setter Property="Foreground" Value="#7F8C8D"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="14"/>
+                                <Setter Property="Height" Value="50"/>
+                                <Setter Property="Padding" Value="20,0"/>
+                                <Setter Property="BorderThickness" Value="0,0,0,2"/>
+                                <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            </Style>
+
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#F0F4F8"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#E3F2FD"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Padding" Value="20,0"/>
+                                <Setter Property="FontSize" Value="14"/>
+                                <Setter Property="Foreground" Value="#2C3E50"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.Resources>
+
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Код" 
-                                              Binding="{Binding AssetCode}" 
-                                              Width="100"/>
-                            <DataGridTextColumn Header="Наименование" 
-                                              Binding="{Binding AssetName}" 
-                                              Width="*"
-                                              MinWidth="200"/>
-                            <DataGridTextColumn Header="Категория" 
+                            <!-- Чекбокс для выбора -->
+                            <DataGridTemplateColumn Width="60">
+                                <DataGridTemplateColumn.Header>
+                                    <CheckBox x:Name="chkSelectAll" 
+                                              HorizontalAlignment="Center"
+                                              Click="ChkSelectAll_Click"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox HorizontalAlignment="Center" 
+                                                  IsChecked="{Binding IsSelected}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Код актива -->
+                            <DataGridTemplateColumn Header="КОД" Width="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding AssetCode}" 
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#3498DB"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Наименование с иконкой -->
+                            <DataGridTemplateColumn Header="НАИМЕНОВАНИЕ" Width="*" MinWidth="300">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="#EBF5FF" 
+                                                    CornerRadius="8" 
+                                                    Width="40" Height="40"
+                                                    Margin="0,0,12,0">
+                                                <TextBlock Text="{Binding CategoryIcon}" 
+                                                           FontSize="20"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                            </Border>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding AssetName}" 
+                                                           FontWeight="Medium"
+                                                           FontSize="15"/>
+                                                <TextBlock Text="{Binding Model}" 
+                                                           Foreground="#7F8C8D"
+                                                           FontSize="12"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Категория -->
+                            <DataGridTextColumn Header="КАТЕГОРИЯ" 
                                               Binding="{Binding CategoryName}" 
-                                              Width="150"/>
-                            <DataGridTemplateColumn Header="Статус" Width="120">
+                                              Width="180"/>
+
+                            <!-- Статус -->
+                            <DataGridTemplateColumn Header="СТАТУС" Width="140">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Border Background="{Binding StatusColor}" 
-                                                CornerRadius="10" 
-                                                Padding="10,3"
-                                                HorizontalAlignment="Center">
+                                                CornerRadius="15" 
+                                                Padding="15,6"
+                                                HorizontalAlignment="Left">
                                             <TextBlock Text="{Binding StatusName}" 
                                                      Foreground="White" 
                                                      FontSize="12"
@@ -169,59 +436,210 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="Локация" 
-                                              Binding="{Binding LocationName}" 
-                                              Width="150"/>
-                            <DataGridTextColumn Header="Ответственный" 
-                                              Binding="{Binding ResponsiblePerson}" 
-                                              Width="200"/>
-                            <DataGridTextColumn Header="Стоимость" 
-                                              Binding="{Binding PurchasePrice, StringFormat='{}{0:C}'}" 
-                                              Width="120">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="TextAlignment" Value="Right"/>
-                                        <Setter Property="Margin" Value="0,0,10,0"/>
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                            </DataGridTextColumn>
+
+                            <!-- Локация -->
+                            <DataGridTemplateColumn Header="ЛОКАЦИЯ" Width="200">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="📍" Margin="0,0,8,0" Foreground="#7F8C8D"/>
+                                            <TextBlock Text="{Binding LocationName}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Ответственный -->
+                            <DataGridTemplateColumn Header="ОТВЕТСТВЕННЫЙ" Width="220">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="#F0F4F8" 
+                                                    CornerRadius="15" 
+                                                    Width="30" Height="30"
+                                                    Margin="0,0,8,0">
+                                                <TextBlock Text="👤" 
+                                                           FontSize="14"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding ResponsiblePerson}" 
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Стоимость -->
+                            <DataGridTemplateColumn Header="СТОИМОСТЬ" Width="150">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding PurchasePrice, StringFormat='{}{0:C}'}" 
+                                                   FontWeight="SemiBold"
+                                                   HorizontalAlignment="Right"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Действия -->
+                            <DataGridTemplateColumn Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Button Content="👁" 
+                                                    Background="Transparent"
+                                                    BorderThickness="0"
+                                                    FontSize="18"
+                                                    Cursor="Hand"
+                                                    ToolTip="Просмотр"
+                                                    Margin="5,0"/>
+                                            <Button Content="⋮" 
+                                                    Background="Transparent"
+                                                    BorderThickness="0"
+                                                    FontSize="20"
+                                                    FontWeight="Bold"
+                                                    Cursor="Hand"
+                                                    ToolTip="Дополнительные действия"
+                                                    Margin="5,0"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
+
+                    <!-- Нижняя панель с пагинацией -->
+                    <Border Grid.Row="1" 
+                            Background="#F8F9FA" 
+                            CornerRadius="0,0,12,12"
+                            BorderBrush="#E0E0E0"
+                            BorderThickness="0,1,0,0">
+                        <Grid Margin="30,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Информация о выборе -->
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Выбрано: " FontSize="14" Foreground="#7F8C8D"/>
+                                    <TextBlock x:Name="txtSelectedCount" Text="0" 
+                                        FontWeight="Bold" FontSize="14" Foreground="#2C3E50"/>
+                                    <TextBlock Text=" из " FontSize="14" Foreground="#7F8C8D" Margin="5,0"/>
+                                    <TextBlock x:Name="txtTotalCount" Text="0" 
+                                        FontWeight="Bold" FontSize="14" Foreground="#2C3E50"/>
+                                </StackPanel>
+
+                                <Button Content="Снять выделение" 
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Foreground="#3498DB"
+                                        FontWeight="Medium"
+                                        Margin="20,0,0,0"
+                                        Cursor="Hand"
+                                        Visibility="Collapsed"
+                                        x:Name="btnClearSelection"/>
+                            </StackPanel>
+
+                            <!-- Пагинация -->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Content="◀" 
+                                        Width="35" Height="35"
+                                        Background="White"
+                                        BorderBrush="#E0E0E0"
+                                        BorderThickness="1"
+                                        Margin="2,0">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="8">
+                                                <ContentPresenter HorizontalAlignment="Center" 
+                                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+
+                                <Button Content="1" 
+                                        Width="35" Height="35"
+                                        Background="#3498DB"
+                                        Foreground="White"
+                                        BorderThickness="0"
+                                        Margin="2,0">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="8">
+                                                <ContentPresenter HorizontalAlignment="Center" 
+                                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+
+                                <Button Content="2" 
+                                        Width="35" Height="35"
+                                        Background="White"
+                                        BorderBrush="#E0E0E0"
+                                        BorderThickness="1"
+                                        Margin="2,0">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="8">
+                                                <ContentPresenter HorizontalAlignment="Center" 
+                                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+
+                                <TextBlock Text="..." 
+                                         VerticalAlignment="Center" 
+                                         Margin="5,0"
+                                         Foreground="#7F8C8D"/>
+
+                                <Button Content="▶" 
+                                        Width="35" Height="35"
+                                        Background="White"
+                                        BorderBrush="#E0E0E0"
+                                        BorderThickness="1"
+                                        Margin="2,0">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="8">
+                                                <ContentPresenter HorizontalAlignment="Center" 
+                                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </StackPanel>
+
+                            <!-- Последнее обновление -->
+                            <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                                <TextBlock Text="Обновлено: " FontSize="13" Foreground="#7F8C8D"/>
+                                <TextBlock x:Name="txtLastUpdate" 
+                                Text="только что" 
+                                FontSize="13"
+                                FontWeight="Medium"
+                                Foreground="#7F8C8D"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
                 </Grid>
             </Border>
         </Grid>
-
-        <!-- Нижняя панель статуса -->
-        <Border Grid.Row="2" Background="White" 
-                BorderBrush="{StaticResource BorderBrush}" 
-                BorderThickness="0,1,0,0">
-            <Grid Margin="30,15">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <TextBlock Grid.Column="0" 
-                         VerticalAlignment="Center"
-                         Foreground="{StaticResource TextSecondaryBrush}">
-                    <Run Text="Выбрано:"/>
-                    <Run Text="{Binding ElementName=dgAssets, Path=SelectedItems.Count}" FontWeight="SemiBold"/>
-                    <Run Text="из"/>
-                    <Run Text="{Binding ElementName=dgAssets, Path=Items.Count}" FontWeight="SemiBold"/>
-                </TextBlock>
-
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <TextBlock Text="Последнее обновление:" 
-                             Foreground="{StaticResource TextSecondaryBrush}"
-                             VerticalAlignment="Center"
-                             Margin="0,0,5,0"/>
-                    <TextBlock x:Name="txtLastUpdate" 
-                             Text="только что" 
-                             Foreground="{StaticResource TextPrimaryBrush}"
-                             FontWeight="Medium"
-                             VerticalAlignment="Center"/>
-                </StackPanel>
-            </Grid>
-        </Border>
     </Grid>
 </Window>
