@@ -109,9 +109,8 @@ namespace AssetManagment
         private void NavigateToAssets()
         {
             PageTitle.Text = "Управление активами";
-            // Временно используем окно, пока не создана страница
-            var assetsWindow = new AssetsWindow(_context, _currentUser);
-            assetsWindow.ShowDialog();
+            var assetsPage = new Pages.AssetsPage(_context, _currentUser);
+            MainFrame.Navigate(assetsPage);
         }
 
         private void NavigateToEmployees()
@@ -144,6 +143,10 @@ namespace AssetManagment
             if (MainFrame.Content is Pages.DashboardPage dashboardPage)
             {
                 dashboardPage.RefreshData();
+            }
+            else if (MainFrame.Content is Pages.AssetsPage assetsPage)
+            {
+                assetsPage.RefreshData();
             }
 
             ShowNotification("Данные успешно обновлены", true);
