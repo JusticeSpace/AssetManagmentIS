@@ -1,179 +1,190 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Threading;
-using System.Globalization;
-using MaterialDesignThemes.Wpf;
+using AssetManagment.Pages;
 
 namespace AssetManagment
 {
     public partial class MainWindow : Window
     {
-        private AssetControlDBEntities _context;
-        private Users _currentUser;
-        private DispatcherTimer _timer;
+        private readonly DispatcherTimer _timeTimer;
+        private readonly AssetControlDBEntities _context; // readonly поле
 
         public MainWindow()
         {
             InitializeComponent();
-            _context = new AssetControlDBEntities();
 
-            // Временно устанавливаем пользователя
-            _currentUser = _context.Users.FirstOrDefault(u => u.Username == "admin");
+            _context = new AssetControlDBEntities(); // Инициализация контекста
 
-            // Добавляем обработчик события
-            MenuListBox.SelectionChanged += MenuListBox_SelectionChanged;
+            // Инициализация таймера для времени (упрощенная инициализация)
+            _timeTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
+            _timeTimer.Tick += TimeTimer_Tick;
+            _timeTimer.Start();
 
-            // Настройка таймера для обновления времени
-            SetupTimer();
+            Loaded += MainWindow_Loaded;
+        }
 
-            // Загрузка информации о пользователе
-            UpdateUserInfo();
-
-            // Загружаем дашборд по умолчанию
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoadUserInfo();
+            ConfigureMenuByRole();
+            UpdateDateTime();
             NavigateToDashboard();
         }
 
-        private void SetupTimer()
+        private void LoadUserInfo()
         {
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(1);
-            _timer.Tick += (s, e) =>
+            if (App.CurrentUser?.Employees != null) // Pattern matching для C# 7.3
             {
-                var culture = new CultureInfo("ru-RU");
-                txtCurrentDateTime.Text = DateTime.Now.ToString("d MMMM yyyy, HH:mm", culture);
-            };
-            _timer.Start();
-        }
-
-        private void UpdateUserInfo()
-        {
-            if (_currentUser != null)
-            {
-                var userInfo = _context.vw_UsersInfo
-                    .FirstOrDefault(u => u.UserID == _currentUser.UserID);
-
-                if (userInfo != null)
-                {
-                    txtUserRole.Text = userInfo.RoleName;
-                    txtUserEmail.Text = userInfo.Email;
-                }
+                var employee = App.CurrentUser.Employees;
+                txtUserName.Text = $"{employee.LastName} {employee.FirstName}";
+                txtUserRole.Text = App.CurrentUser.UserRoles.RoleName;
+                txtUserInitials.Text = $"{employee.FirstName[0]}{employee.LastName[0]}";
             }
         }
 
-        private void MenuListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ConfigureMenuByRole()
         {
-            var selectedItem = MenuListBox.SelectedItem as ListBoxItem;
+            if (App.CurrentUser == null) return;
 
-            if (selectedItem == null) return;
+            switch (App.CurrentUser.RoleID)
+            {
+                case 3: // Пользователь
+                    btnEmployees.Visibility = Visibility.Collapsed;
+                    btnSettings.Visibility = Visibility.Collapsed;
+                    btnReports.Visibility = Visibility.Collapsed;
+                    break;
+                case 2: // Менеджер
+                    btnSettings.Visibility = Visibility.Collapsed;
+                    break;
+                case 1: // Администратор
+                    // Все доступно
+                    break;
+            }
+        }
 
-            // Закрываем боковое меню после выбора
-            DrawerHost.IsLeftDrawerOpen = false;
+        private void UpdateDateTime()
+        {
+            txtCurrentDateTime.Text = DateTime.Now.ToString("dd MMMM yyyy, HH:mm");
+        }
 
-            if (selectedItem == DashboardItem)
-            {
-                NavigateToDashboard();
-            }
-            else if (selectedItem == AssetsItem)
-            {
-                NavigateToAssets();
-            }
-            else if (selectedItem == EmployeesItem)
-            {
-                NavigateToEmployees();
-            }
-            else if (selectedItem == LocationsItem)
-            {
-                NavigateToLocations();
-            }
-            else if (selectedItem == ReportsItem)
-            {
-                NavigateToReports();
-            }
-            else if (selectedItem == SettingsItem)
-            {
-                NavigateToSettings();
-            }
+        private void TimeTimer_Tick(object sender, EventArgs e)
+        {
+            UpdateDateTime();
         }
 
         private void NavigateToDashboard()
         {
-            PageTitle.Text = "Панель управления";
-            var dashboardPage = new Pages.DashboardPage(_context, _currentUser);
-            MainFrame.Navigate(dashboardPage);
+            // Передаем параметры в конструктор
+            MainFrame.Navigate(new DashboardPage(_context, App.CurrentUser));
+            SetActiveButton(btnDashboard);
+            UpdatePageInfo("ViewDashboard", "Панель управления", "Обзор системы и статистика");
         }
 
-        private void NavigateToAssets()
+        private void SetActiveButton(Button activeButton)
         {
-            PageTitle.Text = "Управление активами";
-            var assetsPage = new Pages.AssetsPage(_context, _currentUser);
-            MainFrame.Navigate(assetsPage);
+            // Сброс всех кнопок
+            foreach (Button btn in new[] { btnDashboard, btnAssets, btnEmployees, btnLocations, btnReports, btnSettings })
+            {
+                btn.Style = (Style)FindResource("MenuButtonStyle");
+            }
+
+            // Установка активной кнопки
+            if (activeButton != null)
+            {
+                activeButton.Style = (Style)FindResource("ActiveMenuButtonStyle");
+            }
         }
 
-        private void NavigateToEmployees()
+        private void UpdatePageInfo(string iconKind, string title, string subtitle)
         {
-            PageTitle.Text = "Сотрудники";
-            ShowNotification("Модуль управления сотрудниками будет доступен в следующей версии");
+            PageIcon.Kind = (MaterialDesignThemes.Wpf.PackIconKind)Enum.Parse(typeof(MaterialDesignThemes.Wpf.PackIconKind), iconKind);
+            PageTitle.Text = title;
+            PageSubtitle.Text = subtitle;
         }
 
-        private void NavigateToLocations()
+        private void BtnDashboard_Click(object sender, RoutedEventArgs e)
         {
-            PageTitle.Text = "Локации";
-            ShowNotification("Модуль управления локациями будет доступен в следующей версии");
+            MainFrame.Navigate(new DashboardPage(_context, App.CurrentUser));
+            SetActiveButton(btnDashboard);
+            UpdatePageInfo("ViewDashboard", "Панель управления", "Обзор системы и статистика");
         }
 
-        private void NavigateToReports()
+        private void BtnAssets_Click(object sender, RoutedEventArgs e)
         {
-            PageTitle.Text = "Отчеты";
-            ShowNotification("Модуль отчетов будет доступен в следующей версии");
+            MainFrame.Navigate(new AssetsPage(_context, App.CurrentUser));
+            SetActiveButton(btnAssets);
+            UpdatePageInfo("Package", "Управление активами", "Просмотр и редактирование активов");
         }
 
-        private void NavigateToSettings()
+        private void BtnEmployees_Click(object sender, RoutedEventArgs e)
         {
-            PageTitle.Text = "Настройки";
-            ShowNotification("Настройки системы будут доступны в следующей версии");
+            MessageBox.Show("Страница сотрудников в разработке", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            SetActiveButton(btnEmployees);
+            UpdatePageInfo("AccountGroup", "Сотрудники", "Управление персоналом");
+        }
+
+        private void BtnLocations_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Страница локаций в разработке", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            SetActiveButton(btnLocations);
+            UpdatePageInfo("MapMarker", "Локации", "Управление местоположениями");
+        }
+
+        private void BtnReports_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Страница отчетов в разработке", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            SetActiveButton(btnReports);
+            UpdatePageInfo("ChartLine", "Отчеты", "Аналитика и статистика");
+        }
+
+        private void BtnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Страница настроек в разработке", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            SetActiveButton(btnSettings);
+            UpdatePageInfo("Settings", "Настройки", "Конфигурация системы");
+        }
+
+        private void BtnProfile_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new ProfilePage());
+            SetActiveButton(null); // Профиль не в основном меню
+            UpdatePageInfo("Account", "Профиль пользователя", "Управление личной информацией");
         }
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
-            // Обновляем текущую страницу
-            if (MainFrame.Content is Pages.DashboardPage dashboardPage)
+            if (MainFrame.Content is Page currentPage)
             {
-                dashboardPage.RefreshData();
+                MainFrame.Refresh();
             }
-            else if (MainFrame.Content is Pages.AssetsPage assetsPage)
-            {
-                assetsPage.RefreshData();
-            }
-
-            ShowNotification("Данные успешно обновлены", true);
         }
 
-        private void ShowNotification(string message, bool isSuccess = false)
+        private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
-            var messageQueue = MainSnackbar.MessageQueue;
+            var result = MessageBox.Show("Вы действительно хотите выйти из системы?",
+                "Подтверждение выхода",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
 
-            // Настраиваем стиль уведомления
-            var duration = isSuccess ? 2000 : 4000;
+            if (result == MessageBoxResult.Yes)
+            {
+                App.CurrentUser = null;
+                _timeTimer?.Stop();
+                _context?.Dispose();
 
-            messageQueue?.Enqueue(
-                message,
-                null,
-                null,
-                null,
-                false,
-                true,
-                TimeSpan.FromMilliseconds(duration));
+                new Windows.LoginWindow().Show();
+                Close();
+            }
         }
 
         protected override void OnClosed(EventArgs e)
         {
-            base.OnClosed(e);
-            _timer?.Stop();
+            _timeTimer?.Stop();
             _context?.Dispose();
+            base.OnClosed(e);
         }
     }
 }

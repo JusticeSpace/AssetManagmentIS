@@ -9,354 +9,488 @@
         Height="1080" Width="1920" 
         WindowState="Maximized" 
         WindowStartupLocation="CenterScreen" 
-        Background="#F5F7FA"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="#F8FAFC"
+        TextElement.Foreground="#1F2937"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="14"
         TextOptions.TextFormattingMode="Ideal"
         TextOptions.TextRenderingMode="Auto"
-        FontFamily="{DynamicResource MaterialDesignFont}"
+        FontFamily="Segoe UI"
         Icon="PhotoI/Diamond.png">
 
-    <materialDesign:DialogHost Identifier="RootDialog">
-        <materialDesign:DrawerHost x:Name="DrawerHost" IsLeftDrawerOpen="True">
-            <!-- Боковое меню -->
-            <materialDesign:DrawerHost.LeftDrawerContent>
-                <DockPanel MinWidth="280" Background="White">
-                    <!-- Заголовок с логотипом -->
-                    <Border DockPanel.Dock="Top" 
-                            Background="{DynamicResource PrimaryHueDarkBrush}"
-                            Height="120">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
+    <Window.Resources>
+        <!-- Стили для анимированных кнопок меню -->
+        <Style x:Key="MenuButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+            <Setter Property="Height" Value="52"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="8,2"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="materialDesign:RippleAssist.Feedback" Value="#E2E8F0"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F1F5F9"/>
+                    <Setter Property="Foreground" Value="#334155"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
-                            <!-- Логотип и название -->
-                            <StackPanel Orientation="Horizontal" 
-                                        HorizontalAlignment="Center"
-                                        Margin="0,20,0,0">
-                                <Border Background="White" 
-                                        CornerRadius="12"
-                                        Width="50" Height="50"
-                                        Margin="0,0,12,0">
+        <Style x:Key="ActiveMenuButtonStyle" TargetType="Button" BasedOn="{StaticResource MenuButtonStyle}">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#EEF2FF" Offset="0"/>
+                        <GradientStop Color="#E0E7FF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="#4338CA"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </Window.Resources>
+
+    <materialDesign:DialogHost Identifier="RootDialog">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Модернизированное боковое меню -->
+            <Border Grid.Column="0" Background="White">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="20" 
+                                    Direction="0" 
+                                    RenderingBias="Quality" 
+                                    ShadowDepth="0"
+                                    Opacity="0.1"
+                                    Color="#000000"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Логотип и название -->
+                    <!-- Исправленная секция в MainWindow.xaml -->
+                    <!-- Логотип и название -->
+                    <Border Grid.Row="0" Height="140" Padding="24,32">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#6366F1" Offset="0"/>
+                                <GradientStop Color="#8B5CF6" Offset="0.7"/>
+                                <GradientStop Color="#EC4899" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+
+                        <!-- Обернем в Grid для решения проблемы с Child -->
+                        <Grid>
+                            <!-- Декоративные элементы -->
+                            <Canvas>
+                                <Ellipse Width="100" Height="100" 
+                   Fill="#20FFFFFF" 
+                   Canvas.Right="-30" 
+                   Canvas.Top="-20"/>
+                                <Ellipse Width="60" Height="60" 
+                   Fill="#30FFFFFF" 
+                   Canvas.Left="-10" 
+                   Canvas.Bottom="-10"/>
+                            </Canvas>
+
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Border Background="#20FFFFFF" 
+                   CornerRadius="16"
+                   Width="48" Height="48"
+                   Margin="0,0,0,12">
                                     <Image Source="PhotoI/Diamond.png" 
-                                           Width="30" Height="30"/>
+                      Width="28" Height="28" Margin="10,20,10,0"/>
                                 </Border>
 
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="АКТИВ+" 
-                                             Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                             Foreground="White"
-                                             FontWeight="Bold"/>
-                                    <TextBlock Text="Система контроля" 
-                                             Style="{StaticResource MaterialDesignCaptionTextBlock}"
-                                             Foreground="White"
-                                             Opacity="0.9"/>
-                                </StackPanel>
+                                <TextBlock Text="АКТИВ+" 
+                     FontSize="24"
+                     FontWeight="Bold"
+                     Foreground="White"
+                     HorizontalAlignment="Center"/>
+                                <TextBlock Text="Система контроля активов" 
+                     FontSize="11"
+                     Foreground="#E0E7FF"
+                     HorizontalAlignment="Center"
+                     TextWrapping="Wrap"
+                     TextAlignment="Center"/>
                             </StackPanel>
                         </Grid>
                     </Border>
 
-                    <!-- Информация о пользователе вверху после логотипа -->
-                    <Border DockPanel.Dock="Top" 
-                            Background="#FAFAFA"
-                            Padding="16,12">
+                    <!-- Информация о пользователе -->
+                    <Border Grid.Row="1" 
+                           Background="#F8FAFC"
+                           Padding="20,16"
+                           BorderBrush="#E2E8F0"
+                           BorderThickness="0,0,0,1">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <Border Width="40" Height="40" 
-                                    CornerRadius="20"
-                                    Background="{DynamicResource PrimaryHueLightBrush}">
-                                <TextBlock Text="АД" 
-                                         HorizontalAlignment="Center" 
-                                         VerticalAlignment="Center"
-                                         FontSize="14"
-                                         FontWeight="Medium"
-                                         Foreground="{DynamicResource PrimaryHueDarkBrush}"/>
+                            <Border Grid.Column="0"
+                                   Width="44" Height="44" 
+                                   CornerRadius="22">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#6366F1" Offset="0"/>
+                                        <GradientStop Color="#8B5CF6" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <TextBlock x:Name="txtUserInitials"
+                                          Text="АД" 
+                                          HorizontalAlignment="Center" 
+                                          VerticalAlignment="Center"
+                                          FontSize="16"
+                                          FontWeight="Bold"
+                                          Foreground="White"/>
                             </Border>
 
                             <StackPanel Grid.Column="1" 
-                                        Margin="12,0,0,0" 
-                                        VerticalAlignment="Center">
+                                       Margin="12,0,8,0" 
+                                       VerticalAlignment="Center">
+                                <TextBlock x:Name="txtUserName" 
+                                          Text="Администратор" 
+                                          FontSize="14"
+                                          FontWeight="SemiBold"
+                                          Foreground="#1F2937"/>
                                 <TextBlock x:Name="txtUserRole" 
-                                           Text="Администратор" 
-                                           Style="{StaticResource MaterialDesignSubtitle2TextBlock}"
-                                           FontSize="13"/>
-                                <TextBlock x:Name="txtUserEmail" 
-                                           Text="admin@company.ru" 
-                                           Style="{StaticResource MaterialDesignCaptionTextBlock}"
-                                           FontSize="11"
-                                           Opacity="0.7"/>
+                                          Text="Системный администратор" 
+                                          FontSize="12"
+                                          Foreground="#64748B"/>
                             </StackPanel>
+
+                            <Button Grid.Column="2"
+                                   Style="{StaticResource MaterialDesignIconButton}"
+                                   Width="32" Height="32"
+                                   Padding="0"
+                                   Click="BtnProfile_Click"
+                                   ToolTip="Профиль">
+                                <materialDesign:PackIcon Kind="DotsVertical" 
+                                                       Width="18" 
+                                                       Height="18"
+                                                       Foreground="#94A3B8"/>
+                            </Button>
                         </Grid>
                     </Border>
 
                     <!-- Меню навигации -->
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" 
-                                  DockPanel.Dock="Top">
-                        <ListBox x:Name="MenuListBox" 
-                                 Margin="0,8"
-                                 SelectedIndex="0">
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                                    <Setter Property="Height" Value="48"/>
-                                    <Setter Property="Padding" Value="0"/>
-                                    <Setter Property="Margin" Value="8,1"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="#E3F2FD"/>
-                                        </Trigger>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#F5F5F5"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ListBox.ItemContainerStyle>
+                    <ScrollViewer Grid.Row="2" 
+                                 VerticalScrollBarVisibility="Auto"
+                                 Padding="16,24,16,16">
+                        <StackPanel x:Name="MenuPanel">
+                            <!-- Основные разделы -->
+                            <TextBlock Text="ОСНОВНЫЕ"
+                                     FontSize="11"
+                                     FontWeight="SemiBold"
+                                     Foreground="#94A3B8"
+                                     Margin="20,0,0,12"
+                                     Opacity="0.8"/>
 
-                            <ListBoxItem x:Name="DashboardItem">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="48"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <materialDesign:PackIcon Kind="ViewDashboard" 
-                                                           Width="22" Height="22"
-                                                           HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center"
-                                                           Foreground="{DynamicResource PrimaryHueDarkBrush}"/>
-                                    <TextBlock Grid.Column="1" Text="Дашборд" 
-                                             VerticalAlignment="Center" 
-                                             FontSize="14"
-                                             Margin="8,0,0,0"/>
-                                </Grid>
-                            </ListBoxItem>
+                            <Button x:Name="btnDashboard"
+                                   Style="{StaticResource ActiveMenuButtonStyle}"
+                                   Click="BtnDashboard_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Background="#6366F1"
+                                           CornerRadius="8"
+                                           Width="32" Height="32"
+                                           Margin="0,0,16,0">
+                                        <materialDesign:PackIcon Kind="ViewDashboard" 
+                                                               Width="18" Height="18"
+                                                               Foreground="White"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Text="Панель управления" 
+                                             VerticalAlignment="Center"
+                                             FontSize="14"/>
+                                </StackPanel>
+                            </Button>
 
-                            <ListBoxItem x:Name="AssetsItem">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="48"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <materialDesign:PackIcon Kind="Package" 
-                                                           Width="22" Height="22" 
-                                                           HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center"
-                                                           Foreground="{DynamicResource PrimaryHueDarkBrush}"/>
-                                    <TextBlock Grid.Column="1" Text="Активы" 
-                                             VerticalAlignment="Center" 
-                                             FontSize="14"
-                                             Margin="8,0,0,0"/>
-                                </Grid>
-                            </ListBoxItem>
+                            <Button x:Name="btnAssets"
+                                   Style="{StaticResource MenuButtonStyle}"
+                                   Click="BtnAssets_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Background="#10B981"
+                                           CornerRadius="8"
+                                           Width="32" Height="32"
+                                           Margin="0,0,16,0">
+                                        <materialDesign:PackIcon Kind="Package" 
+                                                               Width="18" Height="18"
+                                                               Foreground="White"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Text="Активы" 
+                                             VerticalAlignment="Center"
+                                             FontSize="14"/>
+                                </StackPanel>
+                            </Button>
 
-                            <ListBoxItem x:Name="EmployeesItem">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="48"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <materialDesign:PackIcon Kind="AccountGroup" 
-                                                           Width="22" Height="22" 
-                                                           HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center"
-                                                           Foreground="{DynamicResource PrimaryHueDarkBrush}"/>
-                                    <TextBlock Grid.Column="1" Text="Сотрудники" 
-                                             VerticalAlignment="Center" 
-                                             FontSize="14"
-                                             Margin="8,0,0,0"/>
-                                </Grid>
-                            </ListBoxItem>
+                            <Button x:Name="btnEmployees"
+                                   Style="{StaticResource MenuButtonStyle}"
+                                   Click="BtnEmployees_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Background="#F59E0B"
+                                           CornerRadius="8"
+                                           Width="32" Height="32"
+                                           Margin="0,0,16,0">
+                                        <materialDesign:PackIcon Kind="AccountGroup" 
+                                                               Width="18" Height="18"
+                                                               Foreground="White"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Text="Сотрудники" 
+                                             VerticalAlignment="Center"
+                                             FontSize="14"/>
+                                </StackPanel>
+                            </Button>
 
-                            <ListBoxItem x:Name="LocationsItem">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="48"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <materialDesign:PackIcon Kind="MapMarker" 
-                                                           Width="22" Height="22" 
-                                                           HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center"
-                                                           Foreground="{DynamicResource PrimaryHueDarkBrush}"/>
-                                    <TextBlock Grid.Column="1" Text="Локации" 
-                                             VerticalAlignment="Center" 
-                                             FontSize="14"
-                                             Margin="8,0,0,0"/>
-                                </Grid>
-                            </ListBoxItem>
+                            <!-- Управление -->
+                            <TextBlock Text="УПРАВЛЕНИЕ"
+                                     FontSize="11"
+                                     FontWeight="SemiBold"
+                                     Foreground="#94A3B8"
+                                     Margin="20,32,0,12"
+                                     Opacity="0.8"/>
 
-                            <ListBoxItem x:Name="ReportsItem">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="48"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <materialDesign:PackIcon Kind="ChartLine" 
-                                                           Width="22" Height="22" 
-                                                           HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center"
-                                                           Foreground="{DynamicResource PrimaryHueDarkBrush}"/>
-                                    <TextBlock Grid.Column="1" Text="Отчеты" 
-                                             VerticalAlignment="Center" 
-                                             FontSize="14"
-                                             Margin="8,0,0,0"/>
-                                </Grid>
-                            </ListBoxItem>
+                            <Button x:Name="btnLocations"
+                                   Style="{StaticResource MenuButtonStyle}"
+                                   Click="BtnLocations_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Background="#8B5CF6"
+                                           CornerRadius="8"
+                                           Width="32" Height="32"
+                                           Margin="0,0,16,0">
+                                        <materialDesign:PackIcon Kind="MapMarker" 
+                                                               Width="18" Height="18"
+                                                               Foreground="White"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Text="Локации" 
+                                             VerticalAlignment="Center"
+                                             FontSize="14"/>
+                                </StackPanel>
+                            </Button>
 
-                            <Separator Margin="16,8"/>
+                            <Button x:Name="btnReports"
+                                   Style="{StaticResource MenuButtonStyle}"
+                                   Click="BtnReports_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Background="#EC4899"
+                                           CornerRadius="8"
+                                           Width="32" Height="32"
+                                           Margin="0,0,16,0">
+                                        <materialDesign:PackIcon Kind="ChartLine" 
+                                                               Width="18" Height="18"
+                                                               Foreground="White"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Text="Отчеты" 
+                                             VerticalAlignment="Center"
+                                             FontSize="14"/>
+                                </StackPanel>
+                            </Button>
 
-                            <ListBoxItem x:Name="SettingsItem">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="48"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <materialDesign:PackIcon Kind="Settings" 
-                                                           Width="22" Height="22" 
-                                                           HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center"
-                                                           Foreground="{DynamicResource PrimaryHueDarkBrush}"/>
-                                    <TextBlock Grid.Column="1" Text="Настройки" 
-                                             VerticalAlignment="Center" 
-                                             FontSize="14"
-                                             Margin="8,0,0,0"/>
-                                </Grid>
-                            </ListBoxItem>
-                        </ListBox>
+                            <!-- Система -->
+                            <TextBlock Text="СИСТЕМА"
+                                     FontSize="11"
+                                     FontWeight="SemiBold"
+                                     Foreground="#94A3B8"
+                                     Margin="20,32,0,12"
+                                     Opacity="0.8"/>
+
+                            <Button x:Name="btnSettings"
+                                   Style="{StaticResource MenuButtonStyle}"
+                                   Click="BtnSettings_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Background="#64748B"
+                                           CornerRadius="8"
+                                           Width="32" Height="32"
+                                           Margin="0,0,16,0">
+                                        <materialDesign:PackIcon Kind="Settings" 
+                                                               Width="18" Height="18"
+                                                               Foreground="White"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Text="Настройки" 
+                                             VerticalAlignment="Center"
+                                             FontSize="14"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
                     </ScrollViewer>
 
                     <!-- Нижняя панель с выходом -->
-                    <Border DockPanel.Dock="Bottom" 
-                            Background="#FAFAFA"
-                            BorderBrush="#E0E0E0"
-                            BorderThickness="0,1,0,0">
+                    <Border Grid.Row="3" 
+                           Background="#F8FAFC"
+                           BorderBrush="#E2E8F0"
+                           BorderThickness="0,1,0,0"
+                           Padding="16">
                         <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                Height="48"
-                                HorizontalContentAlignment="Left"
-                                Padding="0"
-                                Margin="8,8">
-                            <Grid Width="264">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="48"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <materialDesign:PackIcon Kind="Logout" 
-                                                       Width="22" Height="22"
-                                                       HorizontalAlignment="Center"
-                                                       VerticalAlignment="Center"
-                                                       Foreground="#F44336"/>
-                                <TextBlock Grid.Column="1" 
-                                         Text="Выйти из системы" 
+                               Height="48"
+                               HorizontalContentAlignment="Left"
+                               Padding="20,0"
+                               Click="BtnLogout_Click"
+                               Foreground="#EF4444">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Background="#FEF2F2"
+                                       CornerRadius="8"
+                                       Width="32" Height="32"
+                                       Margin="0,0,16,0">
+                                    <materialDesign:PackIcon Kind="Logout" 
+                                                           Width="18" Height="18"
+                                                           Foreground="#EF4444"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Выйти из системы" 
                                          VerticalAlignment="Center" 
                                          FontSize="14"
-                                         Margin="8,0,0,0"
-                                         Foreground="#F44336"/>
-                            </Grid>
+                                         FontWeight="Medium"/>
+                            </StackPanel>
                         </Button>
                     </Border>
+                </Grid>
+            </Border>
 
-                    <!-- Заполнитель для правильного расположения элементов -->
-                    <Grid/>
-                </DockPanel>
-            </materialDesign:DrawerHost.LeftDrawerContent>
-
-            <!-- Основное содержимое -->
-            <Grid Background="#F5F7FA">
+            <!-- Основной контент -->
+            <Grid Grid.Column="1" Background="#F8FAFC">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Верхняя панель -->
-                <materialDesign:Card Grid.Row="0" 
-                                     Margin="0"
-                                     materialDesign:ElevationAssist.Elevation="Dp2"
-                                     Background="White"
-                                     UniformCornerRadius="0">
-                    <Grid Height="64">
-                        <Grid Margin="24,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
+                <!-- Современная верхняя панель -->
+                <Border Grid.Row="0" 
+                       Background="White"
+                       Height="80"
+                       Padding="32,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="10" 
+                                        Direction="-90" 
+                                        RenderingBias="Quality" 
+                                        ShadowDepth="2"
+                                        Opacity="0.05"
+                                        Color="#000000"/>
+                    </Border.Effect>
 
-                            <ToggleButton Grid.Column="0"
-                                          Style="{StaticResource MaterialDesignHamburgerToggleButton}"
-                                          IsChecked="{Binding ElementName=DrawerHost, Path=IsLeftDrawerOpen}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                            <StackPanel Grid.Column="1" 
-                                        Orientation="Horizontal"
-                                        VerticalAlignment="Center"
-                                        Margin="24,0">
+                        <!-- Заголовок страницы -->
+                        <StackPanel Grid.Column="0" 
+                                   Orientation="Horizontal"
+                                   VerticalAlignment="Center">
+                            <Border x:Name="PageIconBorder"
+                                   Background="#EEF2FF"
+                                   CornerRadius="12"
+                                   Width="40" Height="40"
+                                   Margin="0,0,16,0">
                                 <materialDesign:PackIcon x:Name="PageIcon"
                                                        Kind="ViewDashboard" 
-                                                       Width="24" Height="24"
-                                                       VerticalAlignment="Center"
-                                                       Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                                                       Margin="0,0,12,0"/>
+                                                       Width="22" Height="22"
+                                                       Foreground="#6366F1"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
                                 <TextBlock x:Name="PageTitle"
-                                           Text="Панель управления" 
-                                           Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                           VerticalAlignment="Center"/>
+                                          Text="Панель управления" 
+                                          FontSize="20"
+                                          FontWeight="Bold"
+                                          Foreground="#1F2937"/>
+                                <TextBlock x:Name="PageSubtitle"
+                                          Text="Обзор системы и статистика"
+                                          FontSize="14"
+                                          Foreground="#64748B"/>
                             </StackPanel>
+                        </StackPanel>
 
-                            <StackPanel Grid.Column="2" 
-                                        Orientation="Horizontal" 
-                                        VerticalAlignment="Center">
-                                <TextBlock x:Name="txtCurrentDateTime" 
-                                           Text="18 сентября 2024, 14:30" 
-                                           Style="{StaticResource MaterialDesignBody2TextBlock}"
-                                           VerticalAlignment="Center"
-                                           Margin="0,0,24,0"
-                                           Opacity="0.7"/>
+                        <!-- Панель действий -->
+                        <StackPanel Grid.Column="1" 
+                                   Orientation="Horizontal" 
+                                   VerticalAlignment="Center">
+                            <TextBlock x:Name="txtCurrentDateTime" 
+                                      Text="18 сентября 2024, 14:30" 
+                                      FontSize="14"
+                                      VerticalAlignment="Center"
+                                      Foreground="#64748B"
+                                      Margin="0,0,24,0"/>
 
-                                <!-- Кнопка уведомлений -->
-                                <Button Style="{StaticResource MaterialDesignIconButton}"
-                                        Margin="0,0,8,0">
-                                    <materialDesign:Badged Badge="3" 
-                                                          BadgeColorZoneMode="PrimaryDark">
-                                        <materialDesign:PackIcon Kind="Bell" Width="22" Height="22"/>
-                                    </materialDesign:Badged>
-                                </Button>
-                                <Button x:Name="btnRefresh" 
-                                        Style="{StaticResource MaterialDesignRaisedButton}"
-                                        materialDesign:ButtonAssist.CornerRadius="20"
-                                        Height="36"
-                                        Click="BtnRefresh_Click">
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="Refresh" 
-                                                               VerticalAlignment="Center"
-                                                               Width="18" Height="18"/>
-                                        <TextBlock Text="Обновить" 
-                                                 Margin="8,0,4,0" 
-                                                 VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Button>
-                            </StackPanel>
-                        </Grid>
+                            <!-- Кнопка уведомлений -->
+                            <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                                   Width="44" Height="44"
+                                   Margin="0,0,12,0"
+                                   Background="#F1F5F9">
+                                <materialDesign:Badged Badge="3" 
+                                                      BadgePlacementMode="TopRight"
+                                                      BadgeColorZoneMode="SecondaryDark">
+                                    <materialDesign:PackIcon Kind="Bell" 
+                                                           Width="20" 
+                                                           Height="20"
+                                                           Foreground="#64748B"/>
+                                </materialDesign:Badged>
+                            </Button>
+
+                            <Button x:Name="btnRefresh" 
+                                   Height="44"
+                                   Padding="20,0"
+                                   Click="BtnRefresh_Click">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                        <Setter Property="Background" Value="#6366F1"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="12"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                    </Style>
+                                </Button.Style>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Refresh" 
+                                                           VerticalAlignment="Center"
+                                                           Width="18" Height="18"/>
+                                    <TextBlock Text="Обновить" 
+                                             Margin="8,0,0,0" 
+                                             VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
                     </Grid>
-                </materialDesign:Card>
+                </Border>
 
                 <!-- Контент страницы -->
                 <Frame Grid.Row="1" 
-                       x:Name="MainFrame" 
-                       NavigationUIVisibility="Hidden"
-                       Background="Transparent"/>
+                      x:Name="MainFrame" 
+                      NavigationUIVisibility="Hidden"
+                      Background="Transparent"
+                      Margin="0,16,0,0"/>
 
                 <!-- Snackbar для уведомлений -->
                 <materialDesign:Snackbar x:Name="MainSnackbar" 
-                                         Grid.Row="1"
-                                         MessageQueue="{materialDesign:MessageQueue}"
-                                         HorizontalAlignment="Center"
-                                         VerticalAlignment="Bottom"
-                                         Margin="0,0,0,20"/>
+                                        Grid.Row="1"
+                                        MessageQueue="{materialDesign:MessageQueue}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Bottom"
+                                        Margin="0,0,0,32"/>
             </Grid>
-        </materialDesign:DrawerHost>
+        </Grid>
     </materialDesign:DialogHost>
 </Window>
