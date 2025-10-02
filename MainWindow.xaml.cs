@@ -121,7 +121,7 @@ namespace AssetManagment
 
         private void BtnEmployees_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Страница сотрудников в разработке", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            MainFrame.Navigate(new EmployeesPage());
             SetActiveButton(btnEmployees);
             UpdatePageInfo("AccountGroup", "Сотрудники", "Управление персоналом");
         }
