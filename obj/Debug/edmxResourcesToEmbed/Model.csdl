@@ -1,0 +1,729 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="AssetControlDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="AssetDisposals">
+    <Key>
+      <PropertyRef Name="DisposalID" />
+    </Key>
+    <Property Name="DisposalID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="AssetID" Type="Int32" Nullable="false" />
+    <Property Name="DisposalDate" Type="DateTime" Nullable="false" Precision="0" />
+    <Property Name="DisposalReason" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="ApprovedByUserID" Type="Int32" Nullable="false" />
+    <Property Name="CreatedByUserID" Type="Int32" Nullable="false" />
+    <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="Users" Relationship="Self.FK_Disposal_ApprovedBy" FromRole="AssetDisposals" ToRole="Users" />
+    <NavigationProperty Name="Assets" Relationship="Self.FK_Disposal_Asset" FromRole="AssetDisposals" ToRole="Assets" />
+    <NavigationProperty Name="Users1" Relationship="Self.FK_Disposal_CreatedBy" FromRole="AssetDisposals" ToRole="Users" />
+  </EntityType>
+  <EntityType Name="AssetMovements">
+    <Key>
+      <PropertyRef Name="MovementID" />
+    </Key>
+    <Property Name="MovementID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="AssetID" Type="Int32" Nullable="false" />
+    <Property Name="FromLocationID" Type="Int32" Nullable="false" />
+    <Property Name="ToLocationID" Type="Int32" Nullable="false" />
+    <Property Name="MovementDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="Reason" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="CreatedByUserID" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Assets" Relationship="Self.FK_Movements_Asset" FromRole="AssetMovements" ToRole="Assets" />
+    <NavigationProperty Name="Users" Relationship="Self.FK_Movements_CreatedBy" FromRole="AssetMovements" ToRole="Users" />
+    <NavigationProperty Name="Locations" Relationship="Self.FK_Movements_FromLocation" FromRole="AssetMovements" ToRole="Locations" />
+    <NavigationProperty Name="Locations1" Relationship="Self.FK_Movements_ToLocation" FromRole="AssetMovements" ToRole="Locations" />
+  </EntityType>
+  <EntityType Name="Assets">
+    <Key>
+      <PropertyRef Name="AssetID" />
+    </Key>
+    <Property Name="AssetID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="AssetCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="AssetName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+    <Property Name="CategoryID" Type="Int32" Nullable="false" />
+    <Property Name="ManufacturerID" Type="Int32" />
+    <Property Name="Model" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="SerialNumber" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="PurchaseDate" Type="DateTime" Precision="0" />
+    <Property Name="PurchasePrice" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="StatusID" Type="Int32" Nullable="false" />
+    <Property Name="LocationID" Type="Int32" Nullable="false" />
+    <Property Name="ResponsibleEmployeeID" Type="Int32" />
+    <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+    <Property Name="CreatedByUserID" Type="Int32" Nullable="false" />
+    <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+    <Property Name="ModifiedByUserID" Type="Int32" />
+    <Property Name="IsActive" Type="Boolean" />
+    <NavigationProperty Name="AssetDisposals" Relationship="Self.FK_Disposal_Asset" FromRole="Assets" ToRole="AssetDisposals" />
+    <NavigationProperty Name="AssetMovements" Relationship="Self.FK_Movements_Asset" FromRole="Assets" ToRole="AssetMovements" />
+    <NavigationProperty Name="Categories" Relationship="Self.FK_Assets_Category" FromRole="Assets" ToRole="Categories" />
+    <NavigationProperty Name="Users" Relationship="Self.FK_Assets_CreatedBy" FromRole="Assets" ToRole="Users" />
+    <NavigationProperty Name="Employees" Relationship="Self.FK_Assets_Employee" FromRole="Assets" ToRole="Employees" />
+    <NavigationProperty Name="Locations" Relationship="Self.FK_Assets_Location" FromRole="Assets" ToRole="Locations" />
+    <NavigationProperty Name="Manufacturers" Relationship="Self.FK_Assets_Manufacturer" FromRole="Assets" ToRole="Manufacturers" />
+    <NavigationProperty Name="Users1" Relationship="Self.FK_Assets_ModifiedBy" FromRole="Assets" ToRole="Users" />
+    <NavigationProperty Name="AssetStatuses" Relationship="Self.FK_Assets_Status" FromRole="Assets" ToRole="AssetStatuses" />
+    <NavigationProperty Name="Maintenance" Relationship="Self.FK_Maintenance_Asset" FromRole="Assets" ToRole="Maintenance" />
+  </EntityType>
+  <EntityType Name="AssetStatuses">
+    <Key>
+      <PropertyRef Name="StatusID" />
+    </Key>
+    <Property Name="StatusID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="StatusName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="ColorCode" Type="String" MaxLength="7" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Assets" Relationship="Self.FK_Assets_Status" FromRole="AssetStatuses" ToRole="Assets" />
+  </EntityType>
+  <EntityType Name="Categories">
+    <Key>
+      <PropertyRef Name="CategoryID" />
+    </Key>
+    <Property Name="CategoryID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CategoryName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Assets" Relationship="Self.FK_Assets_Category" FromRole="Categories" ToRole="Assets" />
+  </EntityType>
+  <EntityType Name="Departments">
+    <Key>
+      <PropertyRef Name="DepartmentID" />
+    </Key>
+    <Property Name="DepartmentID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DepartmentName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Employees" Relationship="Self.FK_Employees_Department" FromRole="Departments" ToRole="Employees" />
+  </EntityType>
+  <EntityType Name="Employees">
+    <Key>
+      <PropertyRef Name="EmployeeID" />
+    </Key>
+    <Property Name="EmployeeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="MiddleName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="PositionID" Type="Int32" Nullable="false" />
+    <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Phone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="DepartmentID" Type="Int32" Nullable="false" />
+    <Property Name="HireDate" Type="DateTime" Precision="0" />
+    <Property Name="IsActive" Type="Boolean" />
+    <NavigationProperty Name="Assets" Relationship="Self.FK_Assets_Employee" FromRole="Employees" ToRole="Assets" />
+    <NavigationProperty Name="Departments" Relationship="Self.FK_Employees_Department" FromRole="Employees" ToRole="Departments" />
+    <NavigationProperty Name="Positions" Relationship="Self.FK_Employees_Position" FromRole="Employees" ToRole="Positions" />
+    <NavigationProperty Name="Users" Relationship="Self.FK_Users_Employee" FromRole="Employees" ToRole="Users" />
+  </EntityType>
+  <EntityType Name="Locations">
+    <Key>
+      <PropertyRef Name="LocationID" />
+    </Key>
+    <Property Name="LocationID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="LocationName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Building" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Floor" Type="Int32" />
+    <Property Name="Room" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="AssetMovements" Relationship="Self.FK_Movements_FromLocation" FromRole="Locations" ToRole="AssetMovements" />
+    <NavigationProperty Name="AssetMovements1" Relationship="Self.FK_Movements_ToLocation" FromRole="Locations" ToRole="AssetMovements" />
+    <NavigationProperty Name="Assets" Relationship="Self.FK_Assets_Location" FromRole="Locations" ToRole="Assets" />
+  </EntityType>
+  <EntityType Name="Maintenance">
+    <Key>
+      <PropertyRef Name="MaintenanceID" />
+    </Key>
+    <Property Name="MaintenanceID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="AssetID" Type="Int32" Nullable="false" />
+    <Property Name="MaintenanceDate" Type="DateTime" Nullable="false" Precision="0" />
+    <Property Name="MaintenanceTypeID" Type="Int32" Nullable="false" />
+    <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+    <Property Name="Cost" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="CreatedByUserID" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Assets" Relationship="Self.FK_Maintenance_Asset" FromRole="Maintenance" ToRole="Assets" />
+    <NavigationProperty Name="Users" Relationship="Self.FK_Maintenance_CreatedBy" FromRole="Maintenance" ToRole="Users" />
+    <NavigationProperty Name="MaintenanceTypes" Relationship="Self.FK_Maintenance_Type" FromRole="Maintenance" ToRole="MaintenanceTypes" />
+  </EntityType>
+  <EntityType Name="MaintenanceTypes">
+    <Key>
+      <PropertyRef Name="MaintenanceTypeID" />
+    </Key>
+    <Property Name="MaintenanceTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TypeName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Maintenance" Relationship="Self.FK_Maintenance_Type" FromRole="MaintenanceTypes" ToRole="Maintenance" />
+  </EntityType>
+  <EntityType Name="Manufacturers">
+    <Key>
+      <PropertyRef Name="ManufacturerID" />
+    </Key>
+    <Property Name="ManufacturerID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ManufacturerName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Country" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Website" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Assets" Relationship="Self.FK_Assets_Manufacturer" FromRole="Manufacturers" ToRole="Assets" />
+  </EntityType>
+  <EntityType Name="Positions">
+    <Key>
+      <PropertyRef Name="PositionID" />
+    </Key>
+    <Property Name="PositionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="PositionName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Employees" Relationship="Self.FK_Employees_Position" FromRole="Positions" ToRole="Employees" />
+  </EntityType>
+  <EntityType Name="sysdiagrams">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="principal_id" Type="Int32" Nullable="false" />
+    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="version" Type="Int32" />
+    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <EntityType Name="UserRoles">
+    <Key>
+      <PropertyRef Name="RoleID" />
+    </Key>
+    <Property Name="RoleID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="RoleName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Description" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Users" Relationship="Self.FK_Users_Role" FromRole="UserRoles" ToRole="Users" />
+  </EntityType>
+  <EntityType Name="Users">
+    <Key>
+      <PropertyRef Name="UserID" />
+    </Key>
+    <Property Name="UserID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="PasswordHash" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="EmployeeID" Type="Int32" Nullable="false" />
+    <Property Name="RoleID" Type="Int32" Nullable="false" />
+    <Property Name="IsActive" Type="Boolean" />
+    <Property Name="LastLoginDate" Type="DateTime" Precision="3" />
+    <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="AssetDisposals" Relationship="Self.FK_Disposal_ApprovedBy" FromRole="Users" ToRole="AssetDisposals" />
+    <NavigationProperty Name="AssetDisposals1" Relationship="Self.FK_Disposal_CreatedBy" FromRole="Users" ToRole="AssetDisposals" />
+    <NavigationProperty Name="AssetMovements" Relationship="Self.FK_Movements_CreatedBy" FromRole="Users" ToRole="AssetMovements" />
+    <NavigationProperty Name="Assets" Relationship="Self.FK_Assets_CreatedBy" FromRole="Users" ToRole="Assets" />
+    <NavigationProperty Name="Assets1" Relationship="Self.FK_Assets_ModifiedBy" FromRole="Users" ToRole="Assets" />
+    <NavigationProperty Name="Employees" Relationship="Self.FK_Users_Employee" FromRole="Users" ToRole="Employees" />
+    <NavigationProperty Name="Maintenance" Relationship="Self.FK_Maintenance_CreatedBy" FromRole="Users" ToRole="Maintenance" />
+    <NavigationProperty Name="UserRoles" Relationship="Self.FK_Users_Role" FromRole="Users" ToRole="UserRoles" />
+  </EntityType>
+  <EntityType Name="vw_AssetsByCategory">
+    <Key>
+      <PropertyRef Name="CategoryName" />
+    </Key>
+    <Property Name="CategoryName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="AssetCount" Type="Int32" />
+    <Property Name="TotalValue" Type="Decimal" Precision="38" Scale="2" />
+    <Property Name="AveragePrice" Type="Decimal" Precision="38" Scale="6" />
+  </EntityType>
+  <EntityType Name="vw_AssetsByDepartment">
+    <Key>
+      <PropertyRef Name="DepartmentName" />
+    </Key>
+    <Property Name="DepartmentName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="AssetCount" Type="Int32" />
+    <Property Name="TotalValue" Type="Decimal" Precision="38" Scale="2" />
+  </EntityType>
+  <EntityType Name="vw_AssetsFullInfo">
+    <Key>
+      <PropertyRef Name="AssetID" />
+      <PropertyRef Name="AssetCode" />
+      <PropertyRef Name="AssetName" />
+      <PropertyRef Name="CategoryName" />
+      <PropertyRef Name="StatusName" />
+      <PropertyRef Name="LocationName" />
+      <PropertyRef Name="ResponsiblePerson" />
+      <PropertyRef Name="CreatedBy" />
+    </Key>
+    <Property Name="AssetID" Type="Int32" Nullable="false" />
+    <Property Name="AssetCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="AssetName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+    <Property Name="CategoryName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="ManufacturerName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Model" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="SerialNumber" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="PurchaseDate" Type="DateTime" Precision="0" />
+    <Property Name="PurchasePrice" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="StatusName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="StatusColor" Type="String" MaxLength="7" FixedLength="false" Unicode="true" />
+    <Property Name="LocationName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Building" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Room" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="ResponsiblePerson" Type="String" MaxLength="152" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="ResponsibleEmail" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="ResponsibleDepartment" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="CreatedBy" Type="String" MaxLength="101" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+    <Property Name="IsActive" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="vw_MovementHistory">
+    <Key>
+      <PropertyRef Name="MovementID" />
+      <PropertyRef Name="MovementDate" />
+      <PropertyRef Name="AssetCode" />
+      <PropertyRef Name="AssetName" />
+      <PropertyRef Name="FromLocation" />
+      <PropertyRef Name="ToLocation" />
+      <PropertyRef Name="MovedBy" />
+    </Key>
+    <Property Name="MovementID" Type="Int32" Nullable="false" />
+    <Property Name="MovementDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="AssetCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="AssetName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="FromLocation" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="ToLocation" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Reason" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="MovedBy" Type="String" MaxLength="101" FixedLength="false" Unicode="true" Nullable="false" />
+  </EntityType>
+  <EntityType Name="vw_UsersInfo">
+    <Key>
+      <PropertyRef Name="UserID" />
+      <PropertyRef Name="Username" />
+      <PropertyRef Name="RoleName" />
+      <PropertyRef Name="EmployeeID" />
+      <PropertyRef Name="FullName" />
+      <PropertyRef Name="PositionName" />
+      <PropertyRef Name="DepartmentName" />
+    </Key>
+    <Property Name="UserID" Type="Int32" Nullable="false" />
+    <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="UserIsActive" Type="Boolean" />
+    <Property Name="LastLoginDate" Type="DateTime" Precision="3" />
+    <Property Name="RoleName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="EmployeeID" Type="Int32" Nullable="false" />
+    <Property Name="FullName" Type="String" MaxLength="152" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Phone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="PositionName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="DepartmentName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_Disposal_ApprovedBy">
+    <End Role="Users" Type="Self.Users" Multiplicity="1" />
+    <End Role="AssetDisposals" Type="Self.AssetDisposals" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="AssetDisposals">
+        <PropertyRef Name="ApprovedByUserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Disposal_Asset">
+    <End Role="Assets" Type="Self.Assets" Multiplicity="1" />
+    <End Role="AssetDisposals" Type="Self.AssetDisposals" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Assets">
+        <PropertyRef Name="AssetID" />
+      </Principal>
+      <Dependent Role="AssetDisposals">
+        <PropertyRef Name="AssetID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Disposal_CreatedBy">
+    <End Role="Users" Type="Self.Users" Multiplicity="1" />
+    <End Role="AssetDisposals" Type="Self.AssetDisposals" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="AssetDisposals">
+        <PropertyRef Name="CreatedByUserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Movements_Asset">
+    <End Role="Assets" Type="Self.Assets" Multiplicity="1" />
+    <End Role="AssetMovements" Type="Self.AssetMovements" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Assets">
+        <PropertyRef Name="AssetID" />
+      </Principal>
+      <Dependent Role="AssetMovements">
+        <PropertyRef Name="AssetID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Movements_CreatedBy">
+    <End Role="Users" Type="Self.Users" Multiplicity="1" />
+    <End Role="AssetMovements" Type="Self.AssetMovements" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="AssetMovements">
+        <PropertyRef Name="CreatedByUserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Movements_FromLocation">
+    <End Role="Locations" Type="Self.Locations" Multiplicity="1" />
+    <End Role="AssetMovements" Type="Self.AssetMovements" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Locations">
+        <PropertyRef Name="LocationID" />
+      </Principal>
+      <Dependent Role="AssetMovements">
+        <PropertyRef Name="FromLocationID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Movements_ToLocation">
+    <End Role="Locations" Type="Self.Locations" Multiplicity="1" />
+    <End Role="AssetMovements" Type="Self.AssetMovements" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Locations">
+        <PropertyRef Name="LocationID" />
+      </Principal>
+      <Dependent Role="AssetMovements">
+        <PropertyRef Name="ToLocationID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Assets_Category">
+    <End Role="Categories" Type="Self.Categories" Multiplicity="1" />
+    <End Role="Assets" Type="Self.Assets" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Categories">
+        <PropertyRef Name="CategoryID" />
+      </Principal>
+      <Dependent Role="Assets">
+        <PropertyRef Name="CategoryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Assets_CreatedBy">
+    <End Role="Users" Type="Self.Users" Multiplicity="1" />
+    <End Role="Assets" Type="Self.Assets" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="Assets">
+        <PropertyRef Name="CreatedByUserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Assets_Employee">
+    <End Role="Employees" Type="Self.Employees" Multiplicity="0..1" />
+    <End Role="Assets" Type="Self.Assets" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Employees">
+        <PropertyRef Name="EmployeeID" />
+      </Principal>
+      <Dependent Role="Assets">
+        <PropertyRef Name="ResponsibleEmployeeID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Assets_Location">
+    <End Role="Locations" Type="Self.Locations" Multiplicity="1" />
+    <End Role="Assets" Type="Self.Assets" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Locations">
+        <PropertyRef Name="LocationID" />
+      </Principal>
+      <Dependent Role="Assets">
+        <PropertyRef Name="LocationID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Assets_Manufacturer">
+    <End Role="Manufacturers" Type="Self.Manufacturers" Multiplicity="0..1" />
+    <End Role="Assets" Type="Self.Assets" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Manufacturers">
+        <PropertyRef Name="ManufacturerID" />
+      </Principal>
+      <Dependent Role="Assets">
+        <PropertyRef Name="ManufacturerID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Assets_ModifiedBy">
+    <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+    <End Role="Assets" Type="Self.Assets" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="Assets">
+        <PropertyRef Name="ModifiedByUserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Assets_Status">
+    <End Role="AssetStatuses" Type="Self.AssetStatuses" Multiplicity="1" />
+    <End Role="Assets" Type="Self.Assets" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AssetStatuses">
+        <PropertyRef Name="StatusID" />
+      </Principal>
+      <Dependent Role="Assets">
+        <PropertyRef Name="StatusID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Maintenance_Asset">
+    <End Role="Assets" Type="Self.Assets" Multiplicity="1" />
+    <End Role="Maintenance" Type="Self.Maintenance" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Assets">
+        <PropertyRef Name="AssetID" />
+      </Principal>
+      <Dependent Role="Maintenance">
+        <PropertyRef Name="AssetID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Employees_Department">
+    <End Role="Departments" Type="Self.Departments" Multiplicity="1" />
+    <End Role="Employees" Type="Self.Employees" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Departments">
+        <PropertyRef Name="DepartmentID" />
+      </Principal>
+      <Dependent Role="Employees">
+        <PropertyRef Name="DepartmentID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Employees_Position">
+    <End Role="Positions" Type="Self.Positions" Multiplicity="1" />
+    <End Role="Employees" Type="Self.Employees" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Positions">
+        <PropertyRef Name="PositionID" />
+      </Principal>
+      <Dependent Role="Employees">
+        <PropertyRef Name="PositionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Users_Employee">
+    <End Role="Employees" Type="Self.Employees" Multiplicity="1" />
+    <End Role="Users" Type="Self.Users" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Employees">
+        <PropertyRef Name="EmployeeID" />
+      </Principal>
+      <Dependent Role="Users">
+        <PropertyRef Name="EmployeeID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Maintenance_CreatedBy">
+    <End Role="Users" Type="Self.Users" Multiplicity="1" />
+    <End Role="Maintenance" Type="Self.Maintenance" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="Maintenance">
+        <PropertyRef Name="CreatedByUserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Maintenance_Type">
+    <End Role="MaintenanceTypes" Type="Self.MaintenanceTypes" Multiplicity="1" />
+    <End Role="Maintenance" Type="Self.Maintenance" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="MaintenanceTypes">
+        <PropertyRef Name="MaintenanceTypeID" />
+      </Principal>
+      <Dependent Role="Maintenance">
+        <PropertyRef Name="MaintenanceTypeID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Users_Role">
+    <End Role="UserRoles" Type="Self.UserRoles" Multiplicity="1" />
+    <End Role="Users" Type="Self.Users" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="UserRoles">
+        <PropertyRef Name="RoleID" />
+      </Principal>
+      <Dependent Role="Users">
+        <PropertyRef Name="RoleID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="AssetControlDBEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="AssetDisposals" EntityType="Self.AssetDisposals" />
+    <EntitySet Name="AssetMovements" EntityType="Self.AssetMovements" />
+    <EntitySet Name="Assets" EntityType="Self.Assets" />
+    <EntitySet Name="AssetStatuses" EntityType="Self.AssetStatuses" />
+    <EntitySet Name="Categories" EntityType="Self.Categories" />
+    <EntitySet Name="Departments" EntityType="Self.Departments" />
+    <EntitySet Name="Employees" EntityType="Self.Employees" />
+    <EntitySet Name="Locations" EntityType="Self.Locations" />
+    <EntitySet Name="Maintenance" EntityType="Self.Maintenance" />
+    <EntitySet Name="MaintenanceTypes" EntityType="Self.MaintenanceTypes" />
+    <EntitySet Name="Manufacturers" EntityType="Self.Manufacturers" />
+    <EntitySet Name="Positions" EntityType="Self.Positions" />
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
+    <EntitySet Name="UserRoles" EntityType="Self.UserRoles" />
+    <EntitySet Name="Users" EntityType="Self.Users" />
+    <EntitySet Name="vw_AssetsByCategory" EntityType="Self.vw_AssetsByCategory" />
+    <EntitySet Name="vw_AssetsByDepartment" EntityType="Self.vw_AssetsByDepartment" />
+    <EntitySet Name="vw_AssetsFullInfo" EntityType="Self.vw_AssetsFullInfo" />
+    <EntitySet Name="vw_MovementHistory" EntityType="Self.vw_MovementHistory" />
+    <EntitySet Name="vw_UsersInfo" EntityType="Self.vw_UsersInfo" />
+    <AssociationSet Name="FK_Disposal_ApprovedBy" Association="Self.FK_Disposal_ApprovedBy">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="AssetDisposals" EntitySet="AssetDisposals" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Disposal_Asset" Association="Self.FK_Disposal_Asset">
+      <End Role="Assets" EntitySet="Assets" />
+      <End Role="AssetDisposals" EntitySet="AssetDisposals" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Disposal_CreatedBy" Association="Self.FK_Disposal_CreatedBy">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="AssetDisposals" EntitySet="AssetDisposals" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Movements_Asset" Association="Self.FK_Movements_Asset">
+      <End Role="Assets" EntitySet="Assets" />
+      <End Role="AssetMovements" EntitySet="AssetMovements" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Movements_CreatedBy" Association="Self.FK_Movements_CreatedBy">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="AssetMovements" EntitySet="AssetMovements" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Movements_FromLocation" Association="Self.FK_Movements_FromLocation">
+      <End Role="Locations" EntitySet="Locations" />
+      <End Role="AssetMovements" EntitySet="AssetMovements" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Movements_ToLocation" Association="Self.FK_Movements_ToLocation">
+      <End Role="Locations" EntitySet="Locations" />
+      <End Role="AssetMovements" EntitySet="AssetMovements" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Assets_Category" Association="Self.FK_Assets_Category">
+      <End Role="Categories" EntitySet="Categories" />
+      <End Role="Assets" EntitySet="Assets" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Assets_CreatedBy" Association="Self.FK_Assets_CreatedBy">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="Assets" EntitySet="Assets" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Assets_Employee" Association="Self.FK_Assets_Employee">
+      <End Role="Employees" EntitySet="Employees" />
+      <End Role="Assets" EntitySet="Assets" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Assets_Location" Association="Self.FK_Assets_Location">
+      <End Role="Locations" EntitySet="Locations" />
+      <End Role="Assets" EntitySet="Assets" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Assets_Manufacturer" Association="Self.FK_Assets_Manufacturer">
+      <End Role="Manufacturers" EntitySet="Manufacturers" />
+      <End Role="Assets" EntitySet="Assets" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Assets_ModifiedBy" Association="Self.FK_Assets_ModifiedBy">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="Assets" EntitySet="Assets" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Assets_Status" Association="Self.FK_Assets_Status">
+      <End Role="AssetStatuses" EntitySet="AssetStatuses" />
+      <End Role="Assets" EntitySet="Assets" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Maintenance_Asset" Association="Self.FK_Maintenance_Asset">
+      <End Role="Assets" EntitySet="Assets" />
+      <End Role="Maintenance" EntitySet="Maintenance" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Employees_Department" Association="Self.FK_Employees_Department">
+      <End Role="Departments" EntitySet="Departments" />
+      <End Role="Employees" EntitySet="Employees" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Employees_Position" Association="Self.FK_Employees_Position">
+      <End Role="Positions" EntitySet="Positions" />
+      <End Role="Employees" EntitySet="Employees" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Users_Employee" Association="Self.FK_Users_Employee">
+      <End Role="Employees" EntitySet="Employees" />
+      <End Role="Users" EntitySet="Users" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Maintenance_CreatedBy" Association="Self.FK_Maintenance_CreatedBy">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="Maintenance" EntitySet="Maintenance" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Maintenance_Type" Association="Self.FK_Maintenance_Type">
+      <End Role="MaintenanceTypes" EntitySet="MaintenanceTypes" />
+      <End Role="Maintenance" EntitySet="Maintenance" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Users_Role" Association="Self.FK_Users_Role">
+      <End Role="UserRoles" EntitySet="UserRoles" />
+      <End Role="Users" EntitySet="Users" />
+    </AssociationSet>
+    <FunctionImport Name="sp_alterdiagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="version" Mode="In" Type="Int32" />
+      <Parameter Name="definition" Mode="In" Type="Binary" />
+    </FunctionImport>
+    <FunctionImport Name="sp_creatediagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="version" Mode="In" Type="Int32" />
+      <Parameter Name="definition" Mode="In" Type="Binary" />
+    </FunctionImport>
+    <FunctionImport Name="sp_DisposeAsset">
+      <Parameter Name="AssetID" Mode="In" Type="Int32" />
+      <Parameter Name="DisposalReason" Mode="In" Type="String" />
+      <Parameter Name="ApprovedByUserID" Mode="In" Type="Int32" />
+      <Parameter Name="CreatedByUserID" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_dropdiagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_helpdiagramdefinition" ReturnType="Collection(AssetControlDBModel.sp_helpdiagramdefinition_Result)">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_helpdiagrams" ReturnType="Collection(AssetControlDBModel.sp_helpdiagrams_Result)">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_MoveAsset">
+      <Parameter Name="AssetID" Mode="In" Type="Int32" />
+      <Parameter Name="NewLocationID" Mode="In" Type="Int32" />
+      <Parameter Name="Reason" Mode="In" Type="String" />
+      <Parameter Name="UserID" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="sp_renamediagram">
+      <Parameter Name="diagramname" Mode="In" Type="String" />
+      <Parameter Name="owner_id" Mode="In" Type="Int32" />
+      <Parameter Name="new_diagramname" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="sp_upgraddiagrams" />
+    <EntitySet Name="DashboardStats" EntityType="AssetControlDBModel.DashboardStats" />
+    <FunctionImport Name="sp_UpdateDashboardStats" />
+  </EntityContainer>
+  <ComplexType Name="sp_helpdiagramdefinition_Result">
+    <Property Type="Int32" Name="version" Nullable="true" />
+    <Property Type="Binary" Name="definition" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="sp_helpdiagrams_Result">
+    <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+    <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+    <Property Type="Int32" Name="ID" Nullable="false" />
+    <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+    <Property Type="Int32" Name="OwnerID" Nullable="false" />
+  </ComplexType>
+  <EntityType Name="DashboardStats">
+    <Key>
+      <PropertyRef Name="StatsID" />
+    </Key>
+    <Property Name="StatsID" Type="Int32" Nullable="false" />
+    <Property Name="TotalAssets" Type="Int32" />
+    <Property Name="ActiveAssets" Type="Int32" />
+    <Property Name="InStorageAssets" Type="Int32" />
+    <Property Name="InRepairAssets" Type="Int32" />
+    <Property Name="DisposedAssets" Type="Int32" />
+    <Property Name="TotalValue" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="MovementsThisMonth" Type="Int32" />
+    <Property Name="MaintenanceThisMonth" Type="Int32" />
+    <Property Name="LastUpdated" Type="DateTime" Precision="3" />
+  </EntityType>
+</Schema>

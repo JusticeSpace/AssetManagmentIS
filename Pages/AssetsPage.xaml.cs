@@ -242,9 +242,14 @@ namespace AssetManagment.Pages
         // Обработчики событий
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
-            // Здесь будет открытие диалога добавления
-            ShowNotification("Функция добавления актива в разработке", MessageType.Info);
+            if (!CanEdit()) return;
+
+            var win = new Windows.AssetEditorWindow(_context, App.CurrentUser);
+            win.Owner = Window.GetWindow(this);
+            if (win.ShowDialog() == true)
+                RefreshData();
         }
+
 
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
@@ -420,6 +425,19 @@ namespace AssetManagment.Pages
                 LoadAssets();
             }
         }
+        private bool CanEdit(bool showMessage = true)
+        {
+            // используем пользователя из конструктора или из App
+            var user = _currentUser ?? App.CurrentUser;
+            bool allowed = user != null && (user.RoleID == 1 || user.RoleID == 2);
+
+            if (!allowed && showMessage)
+            {
+                MessageBox.Show("Доступно только для Администратора и Менеджера.",
+                                "Нет прав", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return allowed;
+        }
 
         private void BtnView_Click(object sender, RoutedEventArgs e)
         {
@@ -432,11 +450,21 @@ namespace AssetManagment.Pages
 
         private void BtnEditItem_Click(object sender, RoutedEventArgs e)
         {
-            var asset = (sender as Button)?.CommandParameter as AssetItemViewModel;
-            if (asset != null)
-            {
-                ShowNotification($"Редактирование: {asset.AssetName}", MessageType.Info);
-            }
+            if (!CanEdit()) return;
+
+            var btn = sender as Button;
+            if (btn?.CommandParameter == null) return;
+
+            var item = btn.CommandParameter;
+            var prop = item.GetType().GetProperty("AssetID");
+            if (prop == null) return;
+
+            int assetId = (int)prop.GetValue(item, null);
+
+            var win = new Windows.AssetEditorWindow(_context, App.CurrentUser, assetId);
+            win.Owner = Window.GetWindow(this);
+            if (win.ShowDialog() == true)
+                RefreshData();
         }
 
         private void BtnMove_Click(object sender, RoutedEventArgs e)
