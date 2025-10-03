@@ -1,0 +1,749 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="Хранилище AssetControlDBModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="AssetDisposals">
+    <Key>
+      <PropertyRef Name="DisposalID" />
+    </Key>
+    <Property Name="DisposalID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="AssetID" Type="int" Nullable="false" />
+    <Property Name="DisposalDate" Type="date" Nullable="false" />
+    <Property Name="DisposalReason" Type="nvarchar" MaxLength="500" Nullable="false" />
+    <Property Name="ApprovedByUserID" Type="int" Nullable="false" />
+    <Property Name="CreatedByUserID" Type="int" Nullable="false" />
+    <Property Name="CreatedDate" Type="datetime" />
+  </EntityType>
+  <EntityType Name="AssetMovements">
+    <Key>
+      <PropertyRef Name="MovementID" />
+    </Key>
+    <Property Name="MovementID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="AssetID" Type="int" Nullable="false" />
+    <Property Name="FromLocationID" Type="int" Nullable="false" />
+    <Property Name="ToLocationID" Type="int" Nullable="false" />
+    <Property Name="MovementDate" Type="datetime" Nullable="false" />
+    <Property Name="Reason" Type="nvarchar" MaxLength="500" />
+    <Property Name="CreatedByUserID" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Assets">
+    <Key>
+      <PropertyRef Name="AssetID" />
+    </Key>
+    <Property Name="AssetID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="AssetCode" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="AssetName" Type="nvarchar" MaxLength="200" Nullable="false" />
+    <Property Name="Description" Type="nvarchar" MaxLength="1000" />
+    <Property Name="CategoryID" Type="int" Nullable="false" />
+    <Property Name="ManufacturerID" Type="int" />
+    <Property Name="Model" Type="nvarchar" MaxLength="100" />
+    <Property Name="SerialNumber" Type="nvarchar" MaxLength="100" />
+    <Property Name="PurchaseDate" Type="date" />
+    <Property Name="PurchasePrice" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="StatusID" Type="int" Nullable="false" />
+    <Property Name="LocationID" Type="int" Nullable="false" />
+    <Property Name="ResponsibleEmployeeID" Type="int" />
+    <Property Name="Notes" Type="nvarchar(max)" />
+    <Property Name="CreatedDate" Type="datetime" />
+    <Property Name="CreatedByUserID" Type="int" Nullable="false" />
+    <Property Name="ModifiedDate" Type="datetime" />
+    <Property Name="ModifiedByUserID" Type="int" />
+    <Property Name="IsActive" Type="bit" />
+  </EntityType>
+  <EntityType Name="AssetStatuses">
+    <Key>
+      <PropertyRef Name="StatusID" />
+    </Key>
+    <Property Name="StatusID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="StatusName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="ColorCode" Type="nvarchar" MaxLength="7" />
+  </EntityType>
+  <EntityType Name="Categories">
+    <Key>
+      <PropertyRef Name="CategoryID" />
+    </Key>
+    <Property Name="CategoryID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CategoryName" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="Description" Type="nvarchar" MaxLength="500" />
+  </EntityType>
+  <EntityType Name="DashboardStats">
+    <Key>
+      <PropertyRef Name="StatsID" />
+    </Key>
+    <Property Name="StatsID" Type="int" Nullable="false" />
+    <Property Name="TotalAssets" Type="int" />
+    <Property Name="ActiveAssets" Type="int" />
+    <Property Name="InStorageAssets" Type="int" />
+    <Property Name="InRepairAssets" Type="int" />
+    <Property Name="DisposedAssets" Type="int" />
+    <Property Name="TotalValue" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="MovementsThisMonth" Type="int" />
+    <Property Name="MaintenanceThisMonth" Type="int" />
+    <Property Name="LastUpdated" Type="datetime" />
+  </EntityType>
+  <EntityType Name="Departments">
+    <Key>
+      <PropertyRef Name="DepartmentID" />
+    </Key>
+    <Property Name="DepartmentID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="DepartmentName" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="Description" Type="nvarchar" MaxLength="500" />
+  </EntityType>
+  <EntityType Name="Employees">
+    <Key>
+      <PropertyRef Name="EmployeeID" />
+    </Key>
+    <Property Name="EmployeeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="MiddleName" Type="nvarchar" MaxLength="50" />
+    <Property Name="PositionID" Type="int" Nullable="false" />
+    <Property Name="Email" Type="nvarchar" MaxLength="100" />
+    <Property Name="Phone" Type="nvarchar" MaxLength="20" />
+    <Property Name="DepartmentID" Type="int" Nullable="false" />
+    <Property Name="HireDate" Type="date" />
+    <Property Name="IsActive" Type="bit" />
+  </EntityType>
+  <EntityType Name="Locations">
+    <Key>
+      <PropertyRef Name="LocationID" />
+    </Key>
+    <Property Name="LocationID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="LocationName" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="Building" Type="nvarchar" MaxLength="50" />
+    <Property Name="Floor" Type="int" />
+    <Property Name="Room" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="Maintenance">
+    <Key>
+      <PropertyRef Name="MaintenanceID" />
+    </Key>
+    <Property Name="MaintenanceID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="AssetID" Type="int" Nullable="false" />
+    <Property Name="MaintenanceDate" Type="date" Nullable="false" />
+    <Property Name="MaintenanceTypeID" Type="int" Nullable="false" />
+    <Property Name="Description" Type="nvarchar" MaxLength="1000" />
+    <Property Name="Cost" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="CreatedByUserID" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="MaintenanceTypes">
+    <Key>
+      <PropertyRef Name="MaintenanceTypeID" />
+    </Key>
+    <Property Name="MaintenanceTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="TypeName" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="Description" Type="nvarchar" MaxLength="500" />
+  </EntityType>
+  <EntityType Name="Manufacturers">
+    <Key>
+      <PropertyRef Name="ManufacturerID" />
+    </Key>
+    <Property Name="ManufacturerID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ManufacturerName" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="Country" Type="nvarchar" MaxLength="50" />
+    <Property Name="Website" Type="nvarchar" MaxLength="200" />
+  </EntityType>
+  <EntityType Name="Positions">
+    <Key>
+      <PropertyRef Name="PositionID" />
+    </Key>
+    <Property Name="PositionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="PositionName" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="Description" Type="nvarchar" MaxLength="500" />
+  </EntityType>
+  <EntityType Name="sysdiagrams">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+    <Property Name="principal_id" Type="int" Nullable="false" />
+    <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="version" Type="int" />
+    <Property Name="definition" Type="varbinary(max)" />
+  </EntityType>
+  <EntityType Name="UserRoles">
+    <Key>
+      <PropertyRef Name="RoleID" />
+    </Key>
+    <Property Name="RoleID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="RoleName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="Description" Type="nvarchar" MaxLength="200" />
+  </EntityType>
+  <EntityType Name="Users">
+    <Key>
+      <PropertyRef Name="UserID" />
+    </Key>
+    <Property Name="UserID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="PasswordHash" Type="nvarchar" MaxLength="256" Nullable="false" />
+    <Property Name="EmployeeID" Type="int" Nullable="false" />
+    <Property Name="RoleID" Type="int" Nullable="false" />
+    <Property Name="IsActive" Type="bit" />
+    <Property Name="LastLoginDate" Type="datetime" />
+    <Property Name="CreatedDate" Type="datetime" />
+  </EntityType>
+  <!--Ошибки, обнаруженные при создании:
+предупреждение 6002: В таблице или представлении "AssetControlDB.dbo.vw_AssetsByCategory" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
+  <EntityType Name="vw_AssetsByCategory">
+    <Key>
+      <PropertyRef Name="CategoryName" />
+    </Key>
+    <Property Name="CategoryName" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="AssetCount" Type="int" />
+    <Property Name="TotalValue" Type="decimal" Precision="38" Scale="2" />
+    <Property Name="AveragePrice" Type="decimal" Precision="38" Scale="6" />
+  </EntityType>
+  <!--Ошибки, обнаруженные при создании:
+предупреждение 6002: В таблице или представлении "AssetControlDB.dbo.vw_AssetsByDepartment" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
+  <EntityType Name="vw_AssetsByDepartment">
+    <Key>
+      <PropertyRef Name="DepartmentName" />
+    </Key>
+    <Property Name="DepartmentName" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="AssetCount" Type="int" />
+    <Property Name="TotalValue" Type="decimal" Precision="38" Scale="2" />
+  </EntityType>
+  <!--Ошибки, обнаруженные при создании:
+предупреждение 6002: В таблице или представлении "AssetControlDB.dbo.vw_AssetsFullInfo" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
+  <EntityType Name="vw_AssetsFullInfo">
+    <Key>
+      <PropertyRef Name="AssetID" />
+      <PropertyRef Name="AssetCode" />
+      <PropertyRef Name="AssetName" />
+      <PropertyRef Name="CategoryName" />
+      <PropertyRef Name="StatusName" />
+      <PropertyRef Name="LocationName" />
+      <PropertyRef Name="ResponsiblePerson" />
+      <PropertyRef Name="CreatedBy" />
+    </Key>
+    <Property Name="AssetID" Type="int" Nullable="false" />
+    <Property Name="AssetCode" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="AssetName" Type="nvarchar" MaxLength="200" Nullable="false" />
+    <Property Name="Description" Type="nvarchar" MaxLength="1000" />
+    <Property Name="CategoryName" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="ManufacturerName" Type="nvarchar" MaxLength="100" />
+    <Property Name="Model" Type="nvarchar" MaxLength="100" />
+    <Property Name="SerialNumber" Type="nvarchar" MaxLength="100" />
+    <Property Name="PurchaseDate" Type="date" />
+    <Property Name="PurchasePrice" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="StatusName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="StatusColor" Type="nvarchar" MaxLength="7" />
+    <Property Name="LocationName" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="Building" Type="nvarchar" MaxLength="50" />
+    <Property Name="Room" Type="nvarchar" MaxLength="50" />
+    <Property Name="ResponsiblePerson" Type="nvarchar" MaxLength="152" Nullable="false" />
+    <Property Name="ResponsibleEmail" Type="nvarchar" MaxLength="100" />
+    <Property Name="ResponsibleDepartment" Type="nvarchar" MaxLength="100" />
+    <Property Name="CreatedBy" Type="nvarchar" MaxLength="101" Nullable="false" />
+    <Property Name="CreatedDate" Type="datetime" />
+    <Property Name="IsActive" Type="bit" />
+  </EntityType>
+  <!--Ошибки, обнаруженные при создании:
+предупреждение 6002: В таблице или представлении "AssetControlDB.dbo.vw_MovementHistory" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
+  <EntityType Name="vw_MovementHistory">
+    <Key>
+      <PropertyRef Name="MovementID" />
+      <PropertyRef Name="MovementDate" />
+      <PropertyRef Name="AssetCode" />
+      <PropertyRef Name="AssetName" />
+      <PropertyRef Name="FromLocation" />
+      <PropertyRef Name="ToLocation" />
+      <PropertyRef Name="MovedBy" />
+    </Key>
+    <Property Name="MovementID" Type="int" Nullable="false" />
+    <Property Name="MovementDate" Type="datetime" Nullable="false" />
+    <Property Name="AssetCode" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="AssetName" Type="nvarchar" MaxLength="200" Nullable="false" />
+    <Property Name="FromLocation" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="ToLocation" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="Reason" Type="nvarchar" MaxLength="500" />
+    <Property Name="MovedBy" Type="nvarchar" MaxLength="101" Nullable="false" />
+  </EntityType>
+  <!--Ошибки, обнаруженные при создании:
+предупреждение 6002: В таблице или представлении "AssetControlDB.dbo.vw_UsersInfo" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
+  <EntityType Name="vw_UsersInfo">
+    <Key>
+      <PropertyRef Name="UserID" />
+      <PropertyRef Name="Username" />
+      <PropertyRef Name="RoleName" />
+      <PropertyRef Name="EmployeeID" />
+      <PropertyRef Name="FullName" />
+      <PropertyRef Name="PositionName" />
+      <PropertyRef Name="DepartmentName" />
+    </Key>
+    <Property Name="UserID" Type="int" Nullable="false" />
+    <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="UserIsActive" Type="bit" />
+    <Property Name="LastLoginDate" Type="datetime" />
+    <Property Name="RoleName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="EmployeeID" Type="int" Nullable="false" />
+    <Property Name="FullName" Type="nvarchar" MaxLength="152" Nullable="false" />
+    <Property Name="Email" Type="nvarchar" MaxLength="100" />
+    <Property Name="Phone" Type="nvarchar" MaxLength="20" />
+    <Property Name="PositionName" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="DepartmentName" Type="nvarchar" MaxLength="100" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_Assets_Category">
+    <End Role="Categories" Type="Self.Categories" Multiplicity="1" />
+    <End Role="Assets" Type="Self.Assets" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Categories">
+        <PropertyRef Name="CategoryID" />
+      </Principal>
+      <Dependent Role="Assets">
+        <PropertyRef Name="CategoryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Assets_CreatedBy">
+    <End Role="Users" Type="Self.Users" Multiplicity="1" />
+    <End Role="Assets" Type="Self.Assets" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="Assets">
+        <PropertyRef Name="CreatedByUserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Assets_Employee">
+    <End Role="Employees" Type="Self.Employees" Multiplicity="0..1" />
+    <End Role="Assets" Type="Self.Assets" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Employees">
+        <PropertyRef Name="EmployeeID" />
+      </Principal>
+      <Dependent Role="Assets">
+        <PropertyRef Name="ResponsibleEmployeeID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Assets_Location">
+    <End Role="Locations" Type="Self.Locations" Multiplicity="1" />
+    <End Role="Assets" Type="Self.Assets" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Locations">
+        <PropertyRef Name="LocationID" />
+      </Principal>
+      <Dependent Role="Assets">
+        <PropertyRef Name="LocationID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Assets_Manufacturer">
+    <End Role="Manufacturers" Type="Self.Manufacturers" Multiplicity="0..1" />
+    <End Role="Assets" Type="Self.Assets" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Manufacturers">
+        <PropertyRef Name="ManufacturerID" />
+      </Principal>
+      <Dependent Role="Assets">
+        <PropertyRef Name="ManufacturerID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Assets_ModifiedBy">
+    <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+    <End Role="Assets" Type="Self.Assets" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="Assets">
+        <PropertyRef Name="ModifiedByUserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Assets_Status">
+    <End Role="AssetStatuses" Type="Self.AssetStatuses" Multiplicity="1" />
+    <End Role="Assets" Type="Self.Assets" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AssetStatuses">
+        <PropertyRef Name="StatusID" />
+      </Principal>
+      <Dependent Role="Assets">
+        <PropertyRef Name="StatusID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Disposal_ApprovedBy">
+    <End Role="Users" Type="Self.Users" Multiplicity="1" />
+    <End Role="AssetDisposals" Type="Self.AssetDisposals" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="AssetDisposals">
+        <PropertyRef Name="ApprovedByUserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Disposal_Asset">
+    <End Role="Assets" Type="Self.Assets" Multiplicity="1" />
+    <End Role="AssetDisposals" Type="Self.AssetDisposals" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Assets">
+        <PropertyRef Name="AssetID" />
+      </Principal>
+      <Dependent Role="AssetDisposals">
+        <PropertyRef Name="AssetID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Disposal_CreatedBy">
+    <End Role="Users" Type="Self.Users" Multiplicity="1" />
+    <End Role="AssetDisposals" Type="Self.AssetDisposals" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="AssetDisposals">
+        <PropertyRef Name="CreatedByUserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Employees_Department">
+    <End Role="Departments" Type="Self.Departments" Multiplicity="1" />
+    <End Role="Employees" Type="Self.Employees" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Departments">
+        <PropertyRef Name="DepartmentID" />
+      </Principal>
+      <Dependent Role="Employees">
+        <PropertyRef Name="DepartmentID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Employees_Position">
+    <End Role="Positions" Type="Self.Positions" Multiplicity="1" />
+    <End Role="Employees" Type="Self.Employees" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Positions">
+        <PropertyRef Name="PositionID" />
+      </Principal>
+      <Dependent Role="Employees">
+        <PropertyRef Name="PositionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Maintenance_Asset">
+    <End Role="Assets" Type="Self.Assets" Multiplicity="1" />
+    <End Role="Maintenance" Type="Self.Maintenance" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Assets">
+        <PropertyRef Name="AssetID" />
+      </Principal>
+      <Dependent Role="Maintenance">
+        <PropertyRef Name="AssetID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Maintenance_CreatedBy">
+    <End Role="Users" Type="Self.Users" Multiplicity="1" />
+    <End Role="Maintenance" Type="Self.Maintenance" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="Maintenance">
+        <PropertyRef Name="CreatedByUserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Maintenance_Type">
+    <End Role="MaintenanceTypes" Type="Self.MaintenanceTypes" Multiplicity="1" />
+    <End Role="Maintenance" Type="Self.Maintenance" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="MaintenanceTypes">
+        <PropertyRef Name="MaintenanceTypeID" />
+      </Principal>
+      <Dependent Role="Maintenance">
+        <PropertyRef Name="MaintenanceTypeID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Movements_Asset">
+    <End Role="Assets" Type="Self.Assets" Multiplicity="1" />
+    <End Role="AssetMovements" Type="Self.AssetMovements" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Assets">
+        <PropertyRef Name="AssetID" />
+      </Principal>
+      <Dependent Role="AssetMovements">
+        <PropertyRef Name="AssetID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Movements_CreatedBy">
+    <End Role="Users" Type="Self.Users" Multiplicity="1" />
+    <End Role="AssetMovements" Type="Self.AssetMovements" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="AssetMovements">
+        <PropertyRef Name="CreatedByUserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Movements_FromLocation">
+    <End Role="Locations" Type="Self.Locations" Multiplicity="1" />
+    <End Role="AssetMovements" Type="Self.AssetMovements" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Locations">
+        <PropertyRef Name="LocationID" />
+      </Principal>
+      <Dependent Role="AssetMovements">
+        <PropertyRef Name="FromLocationID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Movements_ToLocation">
+    <End Role="Locations" Type="Self.Locations" Multiplicity="1" />
+    <End Role="AssetMovements" Type="Self.AssetMovements" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Locations">
+        <PropertyRef Name="LocationID" />
+      </Principal>
+      <Dependent Role="AssetMovements">
+        <PropertyRef Name="ToLocationID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Users_Employee">
+    <End Role="Employees" Type="Self.Employees" Multiplicity="1" />
+    <End Role="Users" Type="Self.Users" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Employees">
+        <PropertyRef Name="EmployeeID" />
+      </Principal>
+      <Dependent Role="Users">
+        <PropertyRef Name="EmployeeID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Users_Role">
+    <End Role="UserRoles" Type="Self.UserRoles" Multiplicity="1" />
+    <End Role="Users" Type="Self.Users" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="UserRoles">
+        <PropertyRef Name="RoleID" />
+      </Principal>
+      <Dependent Role="Users">
+        <PropertyRef Name="RoleID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Function Name="fn_diagramobjects" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int" />
+  <Function Name="sp_alterdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+    <Parameter Name="version" Type="int" Mode="In" />
+    <Parameter Name="definition" Type="varbinary(max)" Mode="In" />
+  </Function>
+  <Function Name="sp_creatediagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+    <Parameter Name="version" Type="int" Mode="In" />
+    <Parameter Name="definition" Type="varbinary(max)" Mode="In" />
+  </Function>
+  <Function Name="sp_DisposeAsset" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="AssetID" Type="int" Mode="In" />
+    <Parameter Name="DisposalReason" Type="nvarchar" Mode="In" />
+    <Parameter Name="ApprovedByUserID" Type="int" Mode="In" />
+    <Parameter Name="CreatedByUserID" Type="int" Mode="In" />
+  </Function>
+  <Function Name="sp_dropdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+  </Function>
+  <Function Name="sp_helpdiagramdefinition" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+  </Function>
+  <Function Name="sp_helpdiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+  </Function>
+  <Function Name="sp_MoveAsset" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="AssetID" Type="int" Mode="In" />
+    <Parameter Name="NewLocationID" Type="int" Mode="In" />
+    <Parameter Name="Reason" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserID" Type="int" Mode="In" />
+  </Function>
+  <Function Name="sp_renamediagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+    <Parameter Name="owner_id" Type="int" Mode="In" />
+    <Parameter Name="new_diagramname" Type="nvarchar" Mode="In" />
+  </Function>
+  <Function Name="sp_UpdateDashboardStats" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="sp_upgraddiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <EntityContainer Name="Хранилище AssetControlDBModelContainer">
+    <EntitySet Name="AssetDisposals" EntityType="Self.AssetDisposals" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="AssetMovements" EntityType="Self.AssetMovements" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Assets" EntityType="Self.Assets" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="AssetStatuses" EntityType="Self.AssetStatuses" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Categories" EntityType="Self.Categories" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="DashboardStats" EntityType="Self.DashboardStats" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Departments" EntityType="Self.Departments" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Employees" EntityType="Self.Employees" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Locations" EntityType="Self.Locations" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Maintenance" EntityType="Self.Maintenance" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="MaintenanceTypes" EntityType="Self.MaintenanceTypes" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Manufacturers" EntityType="Self.Manufacturers" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Positions" EntityType="Self.Positions" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="UserRoles" EntityType="Self.UserRoles" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="vw_AssetsByCategory" EntityType="Self.vw_AssetsByCategory" store:Type="Views" store:Schema="dbo">
+      <DefiningQuery>SELECT 
+    [vw_AssetsByCategory].[CategoryName] AS [CategoryName], 
+    [vw_AssetsByCategory].[AssetCount] AS [AssetCount], 
+    [vw_AssetsByCategory].[TotalValue] AS [TotalValue], 
+    [vw_AssetsByCategory].[AveragePrice] AS [AveragePrice]
+    FROM [dbo].[vw_AssetsByCategory] AS [vw_AssetsByCategory]</DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="vw_AssetsByDepartment" EntityType="Self.vw_AssetsByDepartment" store:Type="Views" store:Schema="dbo">
+      <DefiningQuery>SELECT 
+    [vw_AssetsByDepartment].[DepartmentName] AS [DepartmentName], 
+    [vw_AssetsByDepartment].[AssetCount] AS [AssetCount], 
+    [vw_AssetsByDepartment].[TotalValue] AS [TotalValue]
+    FROM [dbo].[vw_AssetsByDepartment] AS [vw_AssetsByDepartment]</DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="vw_AssetsFullInfo" EntityType="Self.vw_AssetsFullInfo" store:Type="Views" store:Schema="dbo">
+      <DefiningQuery>SELECT 
+    [vw_AssetsFullInfo].[AssetID] AS [AssetID], 
+    [vw_AssetsFullInfo].[AssetCode] AS [AssetCode], 
+    [vw_AssetsFullInfo].[AssetName] AS [AssetName], 
+    [vw_AssetsFullInfo].[Description] AS [Description], 
+    [vw_AssetsFullInfo].[CategoryName] AS [CategoryName], 
+    [vw_AssetsFullInfo].[ManufacturerName] AS [ManufacturerName], 
+    [vw_AssetsFullInfo].[Model] AS [Model], 
+    [vw_AssetsFullInfo].[SerialNumber] AS [SerialNumber], 
+    [vw_AssetsFullInfo].[PurchaseDate] AS [PurchaseDate], 
+    [vw_AssetsFullInfo].[PurchasePrice] AS [PurchasePrice], 
+    [vw_AssetsFullInfo].[StatusName] AS [StatusName], 
+    [vw_AssetsFullInfo].[StatusColor] AS [StatusColor], 
+    [vw_AssetsFullInfo].[LocationName] AS [LocationName], 
+    [vw_AssetsFullInfo].[Building] AS [Building], 
+    [vw_AssetsFullInfo].[Room] AS [Room], 
+    [vw_AssetsFullInfo].[ResponsiblePerson] AS [ResponsiblePerson], 
+    [vw_AssetsFullInfo].[ResponsibleEmail] AS [ResponsibleEmail], 
+    [vw_AssetsFullInfo].[ResponsibleDepartment] AS [ResponsibleDepartment], 
+    [vw_AssetsFullInfo].[CreatedBy] AS [CreatedBy], 
+    [vw_AssetsFullInfo].[CreatedDate] AS [CreatedDate], 
+    [vw_AssetsFullInfo].[IsActive] AS [IsActive]
+    FROM [dbo].[vw_AssetsFullInfo] AS [vw_AssetsFullInfo]</DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="vw_MovementHistory" EntityType="Self.vw_MovementHistory" store:Type="Views" store:Schema="dbo">
+      <DefiningQuery>SELECT 
+    [vw_MovementHistory].[MovementID] AS [MovementID], 
+    [vw_MovementHistory].[MovementDate] AS [MovementDate], 
+    [vw_MovementHistory].[AssetCode] AS [AssetCode], 
+    [vw_MovementHistory].[AssetName] AS [AssetName], 
+    [vw_MovementHistory].[FromLocation] AS [FromLocation], 
+    [vw_MovementHistory].[ToLocation] AS [ToLocation], 
+    [vw_MovementHistory].[Reason] AS [Reason], 
+    [vw_MovementHistory].[MovedBy] AS [MovedBy]
+    FROM [dbo].[vw_MovementHistory] AS [vw_MovementHistory]</DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="vw_UsersInfo" EntityType="Self.vw_UsersInfo" store:Type="Views" store:Schema="dbo">
+      <DefiningQuery>SELECT 
+    [vw_UsersInfo].[UserID] AS [UserID], 
+    [vw_UsersInfo].[Username] AS [Username], 
+    [vw_UsersInfo].[UserIsActive] AS [UserIsActive], 
+    [vw_UsersInfo].[LastLoginDate] AS [LastLoginDate], 
+    [vw_UsersInfo].[RoleName] AS [RoleName], 
+    [vw_UsersInfo].[EmployeeID] AS [EmployeeID], 
+    [vw_UsersInfo].[FullName] AS [FullName], 
+    [vw_UsersInfo].[Email] AS [Email], 
+    [vw_UsersInfo].[Phone] AS [Phone], 
+    [vw_UsersInfo].[PositionName] AS [PositionName], 
+    [vw_UsersInfo].[DepartmentName] AS [DepartmentName]
+    FROM [dbo].[vw_UsersInfo] AS [vw_UsersInfo]</DefiningQuery>
+    </EntitySet>
+    <AssociationSet Name="FK_Assets_Category" Association="Self.FK_Assets_Category">
+      <End Role="Categories" EntitySet="Categories" />
+      <End Role="Assets" EntitySet="Assets" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Assets_CreatedBy" Association="Self.FK_Assets_CreatedBy">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="Assets" EntitySet="Assets" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Assets_Employee" Association="Self.FK_Assets_Employee">
+      <End Role="Employees" EntitySet="Employees" />
+      <End Role="Assets" EntitySet="Assets" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Assets_Location" Association="Self.FK_Assets_Location">
+      <End Role="Locations" EntitySet="Locations" />
+      <End Role="Assets" EntitySet="Assets" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Assets_Manufacturer" Association="Self.FK_Assets_Manufacturer">
+      <End Role="Manufacturers" EntitySet="Manufacturers" />
+      <End Role="Assets" EntitySet="Assets" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Assets_ModifiedBy" Association="Self.FK_Assets_ModifiedBy">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="Assets" EntitySet="Assets" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Assets_Status" Association="Self.FK_Assets_Status">
+      <End Role="AssetStatuses" EntitySet="AssetStatuses" />
+      <End Role="Assets" EntitySet="Assets" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Disposal_ApprovedBy" Association="Self.FK_Disposal_ApprovedBy">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="AssetDisposals" EntitySet="AssetDisposals" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Disposal_Asset" Association="Self.FK_Disposal_Asset">
+      <End Role="Assets" EntitySet="Assets" />
+      <End Role="AssetDisposals" EntitySet="AssetDisposals" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Disposal_CreatedBy" Association="Self.FK_Disposal_CreatedBy">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="AssetDisposals" EntitySet="AssetDisposals" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Employees_Department" Association="Self.FK_Employees_Department">
+      <End Role="Departments" EntitySet="Departments" />
+      <End Role="Employees" EntitySet="Employees" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Employees_Position" Association="Self.FK_Employees_Position">
+      <End Role="Positions" EntitySet="Positions" />
+      <End Role="Employees" EntitySet="Employees" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Maintenance_Asset" Association="Self.FK_Maintenance_Asset">
+      <End Role="Assets" EntitySet="Assets" />
+      <End Role="Maintenance" EntitySet="Maintenance" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Maintenance_CreatedBy" Association="Self.FK_Maintenance_CreatedBy">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="Maintenance" EntitySet="Maintenance" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Maintenance_Type" Association="Self.FK_Maintenance_Type">
+      <End Role="MaintenanceTypes" EntitySet="MaintenanceTypes" />
+      <End Role="Maintenance" EntitySet="Maintenance" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Movements_Asset" Association="Self.FK_Movements_Asset">
+      <End Role="Assets" EntitySet="Assets" />
+      <End Role="AssetMovements" EntitySet="AssetMovements" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Movements_CreatedBy" Association="Self.FK_Movements_CreatedBy">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="AssetMovements" EntitySet="AssetMovements" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Movements_FromLocation" Association="Self.FK_Movements_FromLocation">
+      <End Role="Locations" EntitySet="Locations" />
+      <End Role="AssetMovements" EntitySet="AssetMovements" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Movements_ToLocation" Association="Self.FK_Movements_ToLocation">
+      <End Role="Locations" EntitySet="Locations" />
+      <End Role="AssetMovements" EntitySet="AssetMovements" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Users_Employee" Association="Self.FK_Users_Employee">
+      <End Role="Employees" EntitySet="Employees" />
+      <End Role="Users" EntitySet="Users" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Users_Role" Association="Self.FK_Users_Role">
+      <End Role="UserRoles" EntitySet="UserRoles" />
+      <End Role="Users" EntitySet="Users" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
