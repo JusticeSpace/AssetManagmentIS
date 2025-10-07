@@ -1,0 +1,268 @@
+﻿<Page x:Class="AssetManagment.Pages.ProfilePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="900" d:DesignWidth="1600"
+      Title="ProfilePage"
+      Background="#F8FAFC">
+
+    <Grid>
+        <Border Height="200" VerticalAlignment="Top">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#6366F1" Offset="0"/>
+                    <GradientStop Color="#8B5CF6" Offset="0.5"/>
+                    <GradientStop Color="#EC4899" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Grid Height="200">
+                    <Canvas>
+                        <Ellipse Width="300" Height="300" Fill="#20FFFFFF" Canvas.Right="-100" Canvas.Top="-100"/>
+                        <Ellipse Width="200" Height="200" Fill="#10FFFFFF" Canvas.Left="-50" Canvas.Bottom="-50"/>
+                    </Canvas>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left" Margin="48,0,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="AccountCircle" Width="40" Height="40" VerticalAlignment="Center" Foreground="White" Margin="0,0,16,0"/>
+                            <TextBlock Text="Профиль пользователя" FontSize="32" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <TextBlock Text="Управление личной информацией и настройками безопасности" FontSize="16" Foreground="#E0E7FF" Margin="56,8,0,0"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid MaxWidth="1400" HorizontalAlignment="Center" Margin="24,-80,24,24">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="380"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Левая колонка - Карточка профиля -->
+                    <Border Grid.Column="0" Background="White" CornerRadius="16" Margin="0,0,16,0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="20" Direction="-90" RenderingBias="Quality" ShadowDepth="4" Opacity="0.1" Color="#000000"/>
+                        </Border.Effect>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="60"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" CornerRadius="16,16,0,0">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Color="#6366F1" Offset="0"/>
+                                        <GradientStop Color="#8B5CF6" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                            <StackPanel Grid.Row="1" Margin="24,0,24,24">
+                                <Grid HorizontalAlignment="Center" Margin="0,-60,0,0">
+                                    <Ellipse Width="120" Height="120" Stroke="White" StrokeThickness="4">
+                                        <Ellipse.Fill>
+                                            <ImageBrush x:Name="ProfileImageBrush" Stretch="UniformToFill"/>
+                                        </Ellipse.Fill>
+                                        <Ellipse.Effect>
+                                            <DropShadowEffect BlurRadius="20" ShadowDepth="5" Opacity="0.3" Color="#6366F1"/>
+                                        </Ellipse.Effect>
+                                    </Ellipse>
+                                    <Button Style="{StaticResource MaterialDesignFloatingActionMiniLightButton}" Width="32" Height="32" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-5,-5" Click="ChangePhoto_Click" ToolTip="Изменить фото">
+                                        <materialDesign:PackIcon Kind="Camera" Width="18" Height="18"/>
+                                    </Button>
+                                </Grid>
+                                <StackPanel HorizontalAlignment="Center" Margin="0,16,0,0">
+                                    <TextBlock x:Name="txtFullName" Text="Иванов Иван Иванович" FontSize="22" FontWeight="Bold" TextAlignment="Center" Foreground="#1F2937" Margin="0,0,0,8"/>
+                                    <Border x:Name="chipRole" Background="#EEF2FF" CornerRadius="12" Padding="12,6" HorizontalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon x:Name="RoleIcon" Kind="Shield" Width="14" Height="14" Foreground="#6366F1" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                            <TextBlock x:Name="txtRoleText" Text="Администратор" FontSize="13" FontWeight="Medium" Foreground="#6366F1"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                                <Grid Margin="0,24,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Background="#F8FAFC" CornerRadius="12" Padding="16" Margin="0,0,6,0">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <TextBlock x:Name="txtAssetCount" Text="0" FontSize="28" FontWeight="Bold" Foreground="#6366F1" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Активов" FontSize="12" Foreground="#6B7280" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Grid.Column="1" Background="#F8FAFC" CornerRadius="12" Padding="16" Margin="6,0,0,0">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <TextBlock x:Name="txtLastLogin" Text="Сегодня" FontSize="14" FontWeight="Bold" Foreground="#1F2937" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Последний вход" FontSize="12" Foreground="#6B7280" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                                <Border Height="1" Background="#E5E7EB" Margin="0,24"/>
+                                <!-- Внутри <StackPanel Grid.Row="1" ... > найди этот блок и замени его -->
+                                <StackPanel>
+                                    <TextBlock Text="Контактная информация" FontSize="16" FontWeight="SemiBold" Foreground="#1F2937" Margin="0,0,0,16"/>
+
+                                    <!-- Email -->
+                                    <Border Background="#F9FAFB" CornerRadius="8" Padding="12" Margin="0,0,0,12">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="#6366F1" CornerRadius="6" Width="32" Height="32" Margin="0,0,12,0">
+                                                <materialDesign:PackIcon Kind="Email" Width="18" Height="18" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="Email" FontSize="12" Foreground="#6B7280"/>
+                                                <TextBlock x:Name="txtEmailDisplay" Text="-" FontSize="14" FontWeight="Medium" Foreground="#1F2937" TextWrapping="Wrap"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Телефон -->
+                                    <Border Background="#F9FAFB" CornerRadius="8" Padding="12" Margin="0,0,0,12">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="#10B981" CornerRadius="6" Width="32" Height="32" Margin="0,0,12,0">
+                                                <materialDesign:PackIcon Kind="Phone" Width="18" Height="18" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="Телефон" FontSize="12" Foreground="#6B7280"/>
+                                                <TextBlock x:Name="txtPhoneDisplay" Text="-" FontSize="14" FontWeight="Medium" Foreground="#1F2937"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Должность -->
+                                    <Border Background="#F9FAFB" CornerRadius="8" Padding="12" Margin="0,0,0,12">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="#F59E0B" CornerRadius="6" Width="32" Height="32" Margin="0,0,12,0">
+                                                <materialDesign:PackIcon Kind="Briefcase" Width="18" Height="18" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="Должность" FontSize="12" Foreground="#6B7280"/>
+                                                <TextBlock x:Name="txtPositionDisplay" Text="-" FontSize="14" FontWeight="Medium" Foreground="#1F2937"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Отдел -->
+                                    <Border Background="#F9FAFB" CornerRadius="8" Padding="12">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="#8B5CF6" CornerRadius="6" Width="32" Height="32" Margin="0,0,12,0">
+                                                <materialDesign:PackIcon Kind="Domain" Width="18" Height="18" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="Отдел" FontSize="12" Foreground="#6B7280"/>
+                                                <TextBlock x:Name="txtDepartmentDisplay" Text="-" FontSize="14" FontWeight="Medium" Foreground="#1F2937"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <StackPanel Grid.Column="1" Margin="16,0,0,0">
+                        <Border Background="White" CornerRadius="16" Margin="0,0,0,24">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="20" Direction="-90" RenderingBias="Quality" ShadowDepth="4" Opacity="0.1" Color="#000000"/>
+                            </Border.Effect>
+                            <StackPanel Margin="32">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                                    <Border Background="#EEF2FF" CornerRadius="8" Width="40" Height="40" Margin="0,0,16,0">
+                                        <materialDesign:PackIcon Kind="AccountEdit" Width="24" Height="24" Foreground="#6366F1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Персональные данные" FontSize="20" FontWeight="Bold" Foreground="#1F2937"/>
+                                        <TextBlock Text="Редактирование ФИО, логина и контактной информации" FontSize="14" Foreground="#6B7280"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- ИСПРАВЛЕНИЕ: IsReadOnly="False" (или убрать) -->
+                                    <TextBox Grid.Row="0" Grid.Column="0" x:Name="txtLastName" materialDesign:HintAssist.Hint="Фамилия •" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,20"/>
+                                    <TextBox Grid.Row="0" Grid.Column="2" x:Name="txtFirstName" materialDesign:HintAssist.Hint="Имя •" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,20"/>
+                                    <TextBox Grid.Row="1" Grid.Column="0" x:Name="txtMiddleName" materialDesign:HintAssist.Hint="Отчество" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,20"/>
+                                    <TextBox Grid.Row="1" Grid.Column="2" x:Name="txtUsername" materialDesign:HintAssist.Hint="Логин •" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,20"/>
+                                    <TextBox Grid.Row="2" Grid.Column="0" x:Name="txtEmail" materialDesign:HintAssist.Hint="Email" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:TextFieldAssist.HasLeadingIcon="True" materialDesign:TextFieldAssist.LeadingIcon="Email" Margin="0,0,0,20"/>
+                                    <TextBox Grid.Row="2" Grid.Column="2" x:Name="txtPhone" materialDesign:HintAssist.Hint="Телефон" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:TextFieldAssist.HasLeadingIcon="True" materialDesign:TextFieldAssist.LeadingIcon="Phone" Margin="0,0,0,20"/>
+                                </Grid>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button x:Name="btnCancel" Content="СБРОСИТЬ" Height="44" Padding="24,0" Click="BtnCancel_Click">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+                                                <Setter Property="BorderBrush" Value="#D1D5DB"/>
+                                                <Setter Property="Foreground" Value="#6B7280"/>
+                                                <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
+                                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <Button x:Name="btnSave" Content="СОХРАНИТЬ" Height="44" Padding="24,0" Margin="12,0,0,0" Click="BtnSave_Click">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                                <Setter Property="Background" Value="#6366F1"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
+                                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="White" CornerRadius="16">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="20" Direction="-90" RenderingBias="Quality" ShadowDepth="4" Opacity="0.1" Color="#000000"/>
+                            </Border.Effect>
+                            <StackPanel Margin="32">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                                    <Border Background="#FEF2F2" CornerRadius="8" Width="40" Height="40" Margin="0,0,16,0">
+                                        <materialDesign:PackIcon Kind="LockReset" Width="24" Height="24" Foreground="#EF4444" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Безопасность" FontSize="20" FontWeight="Bold" Foreground="#1F2937"/>
+                                        <TextBlock Text="Изменение пароля для защиты учетной записи" FontSize="14" Foreground="#6B7280"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <PasswordBox x:Name="txtCurrentPassword" materialDesign:HintAssist.Hint="Текущий пароль •" Style="{StaticResource MaterialDesignOutlinedPasswordBox}" materialDesign:TextFieldAssist.HasLeadingIcon="True" materialDesign:TextFieldAssist.LeadingIcon="Lock" Margin="0,0,0,20"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <PasswordBox Grid.Column="0" x:Name="txtNewPassword" materialDesign:HintAssist.Hint="Новый пароль •" Style="{StaticResource MaterialDesignOutlinedPasswordBox}" materialDesign:TextFieldAssist.HasLeadingIcon="True" materialDesign:TextFieldAssist.LeadingIcon="LockPlus" Margin="0,0,0,24"/>
+                                    <PasswordBox Grid.Column="2" x:Name="txtConfirmPassword" materialDesign:HintAssist.Hint="Подтвердите пароль •" Style="{StaticResource MaterialDesignOutlinedPasswordBox}" materialDesign:TextFieldAssist.HasLeadingIcon="True" materialDesign:TextFieldAssist.LeadingIcon="LockCheck" Margin="0,0,0,24"/>
+                                </Grid>
+                                <Button x:Name="btnChangePassword" Content="ИЗМЕНИТЬ ПАРОЛЬ" Height="44" Padding="24,0" HorizontalAlignment="Right" Click="BtnChangePassword_Click">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                            <Setter Property="Background" Value="#EF4444"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+        <materialDesign:Snackbar x:Name="NotificationSnackbar" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,16" MessageQueue="{materialDesign:MessageQueue}"/>
+    </Grid>
+</Page>

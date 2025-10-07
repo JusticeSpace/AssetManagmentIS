@@ -32,6 +32,7 @@ namespace AssetManagment
         public virtual DbSet<Assets> Assets { get; set; }
         public virtual DbSet<AssetStatuses> AssetStatuses { get; set; }
         public virtual DbSet<Categories> Categories { get; set; }
+        public virtual DbSet<DashboardStats> DashboardStats { get; set; }
         public virtual DbSet<Departments> Departments { get; set; }
         public virtual DbSet<Employees> Employees { get; set; }
         public virtual DbSet<Locations> Locations { get; set; }
@@ -47,7 +48,6 @@ namespace AssetManagment
         public virtual DbSet<vw_AssetsFullInfo> vw_AssetsFullInfo { get; set; }
         public virtual DbSet<vw_MovementHistory> vw_MovementHistory { get; set; }
         public virtual DbSet<vw_UsersInfo> vw_UsersInfo { get; set; }
-        public virtual DbSet<DashboardStats> DashboardStats { get; set; }
     
         public virtual int sp_alterdiagram(string diagramname, Nullable<int> owner_id, Nullable<int> version, byte[] definition)
         {
@@ -189,14 +189,14 @@ namespace AssetManagment
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_renamediagram", diagramnameParameter, owner_idParameter, new_diagramnameParameter);
         }
     
-        public virtual int sp_upgraddiagrams()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_upgraddiagrams");
-        }
-    
         public virtual int sp_UpdateDashboardStats()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_UpdateDashboardStats");
+        }
+    
+        public virtual int sp_upgraddiagrams()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_upgraddiagrams");
         }
     }
 }

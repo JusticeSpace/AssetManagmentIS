@@ -1,0 +1,298 @@
+﻿<Page x:Class="AssetManagment.Pages.AssetsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="900" d:DesignWidth="1600"
+      Title="AssetsPage"
+      Background="#F8FAFC">
+
+    <Page.Resources>
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="20" Direction="-90" RenderingBias="Quality" ShadowDepth="4" Opacity="0.1" Color="#000000"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ActionButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="8,0"/>
+        </Style>
+        <Style x:Key="PopupButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="16,0"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Верхняя панель -->
+        <Border Grid.Row="0" Style="{StaticResource CardStyle}" Padding="32" Margin="0,0,0,24">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Background="#EEF2FF" CornerRadius="12" Width="48" Height="48" Margin="0,0,16,0">
+                            <materialDesign:PackIcon Kind="Package" Width="24" Height="24" Foreground="#6366F1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Управление активами" FontSize="24" FontWeight="Bold" Foreground="#1F2937"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                <TextBlock Text="Всего активов в базе:" FontSize="14" Foreground="#64748B" Margin="0,0,8,0"/>
+                                <TextBlock x:Name="txtTotalCount" Text="0" FontSize="14" FontWeight="Bold" Foreground="#6366F1"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button x:Name="btnAdd" Style="{StaticResource ActionButtonStyle}" Background="#6366F1" Foreground="White" Click="BtnAdd_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Width="20" Height="20" Margin="0,0,8,0"/>
+                                <TextBlock Text="Добавить актив"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="btnEdit" Style="{StaticResource MaterialDesignOutlinedButton}" materialDesign:ButtonAssist.CornerRadius="12" Height="44" Padding="20,0" Margin="8,0" BorderBrush="#E2E8F0" Foreground="#475569" Click="BtnEdit_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Pencil" VerticalAlignment="Center" Width="20" Height="20" Margin="0,0,8,0"/>
+                                <TextBlock Text="Изменить"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="btnDelete" Style="{StaticResource MaterialDesignOutlinedButton}" materialDesign:ButtonAssist.CornerRadius="12" Height="44" Padding="20,0" Margin="8,0" Foreground="#EF4444" BorderBrush="#FEE2E2" Click="BtnDelete_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Archive" VerticalAlignment="Center" Width="20" Height="20" Margin="0,0,8,0"/>
+                                <TextBlock Text="Списать"/>
+                            </StackPanel>
+                        </Button>
+                        <Border Width="1" Height="32" Background="#E2E8F0" Margin="16,0"/>
+                        <Button x:Name="btnExport" Visibility="Collapsed" Style="{StaticResource MaterialDesignFlatButton}" Height="44" Padding="16,0" Foreground="#64748B">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Download" VerticalAlignment="Center" Width="20" Height="20" Margin="0,0,8,0"/>
+                                <TextBlock Text="Экспорт"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="btnRefresh" Style="{StaticResource MaterialDesignIconButton}" Width="44" Height="44" ToolTip="Обновить" Background="#F8FAFC" Click="BtnRefresh_Click">
+                            <materialDesign:PackIcon Kind="Refresh" Width="20" Height="20"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Row="1" Margin="0,32,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="400"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Height="48">
+                        <Grid>
+                            <materialDesign:PackIcon Kind="Magnify" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="16,0,0,0" Width="20" Height="20" Foreground="#94A3B8" IsHitTestVisible="False"/>
+                            <TextBox x:Name="txtSearch" Padding="48,0,40,0" BorderThickness="0" Background="Transparent" VerticalContentAlignment="Center" FontSize="14" TextChanged="TxtSearch_TextChanged"/>
+                            <TextBlock Text="Поиск по коду, названию..." HorizontalAlignment="Left" VerticalAlignment="Center" Margin="48,0,0,0" Foreground="#94A3B8" IsHitTestVisible="False">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=txtSearch, Path=Text}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                    </Border>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="24,0,0,0" VerticalAlignment="Center">
+                        <Border Background="#F8FAFC" CornerRadius="8" Padding="12,8" Margin="0,0,12,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Filter" Width="16" Height="16" VerticalAlignment="Center" Foreground="#64748B" Margin="0,0,8,0"/>
+                                <TextBlock Text="Фильтры:" FontSize="13" FontWeight="Medium" Foreground="#475569" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <ComboBox x:Name="cmbStatusFilter" materialDesign:HintAssist.Hint="Статус" Style="{StaticResource MaterialDesignOutlinedComboBox}" Width="150" Height="48" Margin="0,0,12,0" SelectionChanged="CmbFilter_SelectionChanged" IsEditable="False"/>
+                        <ComboBox x:Name="cmbCategoryFilter" materialDesign:HintAssist.Hint="Категория" Style="{StaticResource MaterialDesignOutlinedComboBox}" Width="150" Height="48" Margin="0,0,12,0" SelectionChanged="CmbFilter_SelectionChanged" IsEditable="False"/>
+                        <ComboBox x:Name="cmbLocationFilter" materialDesign:HintAssist.Hint="Локация" Style="{StaticResource MaterialDesignOutlinedComboBox}" Width="150" Height="48" SelectionChanged="CmbFilter_SelectionChanged" IsEditable="False"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- Основной контент -->
+        <Border Grid.Row="1" Style="{StaticResource CardStyle}" Padding="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <DataGrid x:Name="dgAssets" Grid.Row="0" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="None" SelectionMode="Extended" SelectionUnit="FullRow" materialDesign:DataGridAssist.CellPadding="16 12" materialDesign:DataGridAssist.ColumnHeaderPadding="16 12" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" Background="Transparent" SelectionChanged="DgAssets_SelectionChanged">
+                    <DataGrid.Resources>
+                        <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#F8FAFC"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#EEF2FF"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                            <Setter Property="Background" Value="#F8FAFC"/>
+                            <Setter Property="Foreground" Value="#475569"/>
+                            <Setter Property="FontWeight" Value="SemiBold"/>
+                            <Setter Property="FontSize" Value="12"/>
+                            <Setter Property="Height" Value="48"/>
+                        </Style>
+                    </DataGrid.Resources>
+                    <DataGrid.Columns>
+                        <DataGridCheckBoxColumn Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}" Width="60">
+                            <DataGridCheckBoxColumn.Header>
+                                <CheckBox x:Name="chkSelectAll" Click="ChkSelectAll_Click"/>
+                            </DataGridCheckBoxColumn.Header>
+                        </DataGridCheckBoxColumn>
+                        <DataGridTextColumn Header="КОД" Binding="{Binding FullInfo.AssetCode}" Width="120">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="Foreground" Value="#6366F1"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTemplateColumn Header="НАИМЕНОВАНИЕ" Width="*" MinWidth="300">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Background="#EEF2FF" CornerRadius="8" Width="40" Height="40" Margin="0,0,12,0">
+                                            <TextBlock Text="📦" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding FullInfo.AssetName}" FontSize="14" FontWeight="Medium" Foreground="#1F2937"/>
+                                            <TextBlock Text="{Binding FullInfo.Model}" FontSize="12" Foreground="#64748B" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="КАТЕГОРИЯ" Binding="{Binding FullInfo.CategoryName}" Width="150">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="#475569"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTemplateColumn Header="СТАТУС" Width="140">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Background="{Binding FullInfo.StatusColor}" CornerRadius="12" Padding="12,6">
+                                        <TextBlock Text="{Binding FullInfo.StatusName}" Foreground="White" FontSize="12" FontWeight="Medium" HorizontalAlignment="Center"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="ЛОКАЦИЯ" Binding="{Binding FullInfo.LocationName}" Width="180">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="#475569"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="ОТВЕТСТВЕННЫЙ" Binding="{Binding FullInfo.ResponsiblePerson}" Width="200">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="#475569"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="СТОИМОСТЬ" Binding="{Binding FullInfo.PurchasePrice, StringFormat='₽ {0:N0}'}" Width="140">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextAlignment" Value="Right"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="Foreground" Value="#1F2937"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTemplateColumn Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <materialDesign:PopupBox PlacementMode="BottomAndAlignRightEdges" StaysOpen="False" Width="32" Height="32">
+                                            <StackPanel Width="200">
+                                                <Button x:Name="BtnEditItem" Style="{StaticResource PopupButtonStyle}" Click="BtnEditItem_Click" CommandParameter="{Binding}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <materialDesign:PackIcon Kind="Pencil" VerticalAlignment="Center" Margin="0,0,12,0" Foreground="#475569"/>
+                                                        <TextBlock Text="Редактировать"/>
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button x:Name="BtnDisposeItem" Style="{StaticResource PopupButtonStyle}" Click="BtnDisposeItem_Click" CommandParameter="{Binding}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <materialDesign:PackIcon Kind="Archive" VerticalAlignment="Center" Margin="0,0,12,0" Foreground="#F59E0B"/>
+                                                        <TextBlock Text="Списать актив"/>
+                                                    </StackPanel>
+                                                </Button>
+                                                <Separator Margin="0,8"/>
+                                                <Button x:Name="BtnDeleteItem" Style="{StaticResource PopupButtonStyle}" Foreground="#EF4444" Click="BtnDeleteItem_Click" CommandParameter="{Binding}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <materialDesign:PackIcon Kind="DeleteForever" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                                        <TextBlock Text="Удалить навсегда"/>
+                                                    </StackPanel>
+                                                </Button>
+                                            </StackPanel>
+                                        </materialDesign:PopupBox>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Border Grid.Row="1" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Padding="24,16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock x:Name="txtSelectionInfo" FontSize="14" Foreground="#64748B"/>
+                            <Button x:Name="btnClearSelection" Content="Снять выделение" Style="{StaticResource MaterialDesignFlatButton}" Foreground="#6366F1" FontWeight="Medium" Margin="16,0,0,0" Visibility="Collapsed" Click="BtnClearSelection_Click"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button x:Name="btnPrevPage" Style="{StaticResource MaterialDesignIconButton}" Width="36" Height="36" Click="BtnPrevPage_Click">
+                                <materialDesign:PackIcon Kind="ChevronLeft" Width="20" Height="20"/>
+                            </Button>
+                            <TextBlock x:Name="txtPageInfo" Text="1 / 1" VerticalAlignment="Center" FontSize="14" FontWeight="Medium" Foreground="#1F2937" Margin="16,0"/>
+                            <Button x:Name="btnNextPage" Style="{StaticResource MaterialDesignIconButton}" Width="36" Height="36" Click="BtnNextPage_Click">
+                                <materialDesign:PackIcon Kind="ChevronRight" Width="20" Height="20"/>
+                            </Button>
+                            <ComboBox x:Name="cmbPageSize" materialDesign:HintAssist.Hint="На странице" Margin="24,0,0,0" Width="120" SelectionChanged="CmbPageSize_SelectionChanged" IsEditable="False">
+                                <ComboBoxItem Content="20" IsSelected="True"/>
+                                <ComboBoxItem Content="50"/>
+                                <ComboBoxItem Content="100"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <TextBlock x:Name="txtLastUpdate" FontSize="12" Foreground="#94A3B8" TextAlignment="Right"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+        <materialDesign:Snackbar x:Name="NotificationSnackbar" Grid.Row="1" MessageQueue="{materialDesign:MessageQueue}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,32"/>
+    </Grid>
+</Page>

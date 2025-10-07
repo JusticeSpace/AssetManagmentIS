@@ -23,6 +23,7 @@ namespace AssetManagment
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public Nullable<System.DateTime> HireDate { get; set; }
         public string PositionName { get; set; }
         public string DepartmentName { get; set; }
     }

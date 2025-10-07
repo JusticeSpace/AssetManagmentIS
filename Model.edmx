@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="Хранилище AssetControlDBModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="Хранилище AssetControlDBModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AssetDisposals">
           <Key>
             <PropertyRef Name="DisposalID" />
@@ -106,6 +106,7 @@
           <Property Name="DepartmentID" Type="int" Nullable="false" />
           <Property Name="HireDate" Type="date" />
           <Property Name="IsActive" Type="bit" />
+          <Property Name="Photo" Type="varbinary(max)" />
         </EntityType>
         <EntityType Name="Locations">
           <Key>
@@ -283,6 +284,7 @@
           <Property Name="FullName" Type="nvarchar" MaxLength="152" Nullable="false" />
           <Property Name="Email" Type="nvarchar" MaxLength="100" />
           <Property Name="Phone" Type="nvarchar" MaxLength="20" />
+          <Property Name="HireDate" Type="date" />
           <Property Name="PositionName" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="DepartmentName" Type="nvarchar" MaxLength="100" Nullable="false" />
         </EntityType>
@@ -662,6 +664,7 @@
     [vw_UsersInfo].[FullName] AS [FullName], 
     [vw_UsersInfo].[Email] AS [Email], 
     [vw_UsersInfo].[Phone] AS [Phone], 
+    [vw_UsersInfo].[HireDate] AS [HireDate], 
     [vw_UsersInfo].[PositionName] AS [PositionName], 
     [vw_UsersInfo].[DepartmentName] AS [DepartmentName]
     FROM [dbo].[vw_UsersInfo] AS [vw_UsersInfo]</DefiningQuery>
@@ -751,7 +754,8 @@
             <End Role="Users" EntitySet="Users" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="AssetControlDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -838,6 +842,21 @@
           <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Assets" Relationship="Self.FK_Assets_Category" FromRole="Categories" ToRole="Assets" />
         </EntityType>
+        <EntityType Name="DashboardStats">
+          <Key>
+            <PropertyRef Name="StatsID" />
+          </Key>
+          <Property Name="StatsID" Type="Int32" Nullable="false" />
+          <Property Name="TotalAssets" Type="Int32" />
+          <Property Name="ActiveAssets" Type="Int32" />
+          <Property Name="InStorageAssets" Type="Int32" />
+          <Property Name="InRepairAssets" Type="Int32" />
+          <Property Name="DisposedAssets" Type="Int32" />
+          <Property Name="TotalValue" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="MovementsThisMonth" Type="Int32" />
+          <Property Name="MaintenanceThisMonth" Type="Int32" />
+          <Property Name="LastUpdated" Type="DateTime" Precision="3" />
+        </EntityType>
         <EntityType Name="Departments">
           <Key>
             <PropertyRef Name="DepartmentID" />
@@ -861,6 +880,7 @@
           <Property Name="DepartmentID" Type="Int32" Nullable="false" />
           <Property Name="HireDate" Type="DateTime" Precision="0" />
           <Property Name="IsActive" Type="Boolean" />
+          <Property Name="Photo" Type="Binary" MaxLength="Max" FixedLength="false" />
           <NavigationProperty Name="Assets" Relationship="Self.FK_Assets_Employee" FromRole="Employees" ToRole="Assets" />
           <NavigationProperty Name="Departments" Relationship="Self.FK_Employees_Department" FromRole="Employees" ToRole="Departments" />
           <NavigationProperty Name="Positions" Relationship="Self.FK_Employees_Position" FromRole="Employees" ToRole="Positions" />
@@ -1050,6 +1070,7 @@
           <Property Name="FullName" Type="String" MaxLength="152" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Phone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="HireDate" Type="DateTime" Precision="0" />
           <Property Name="PositionName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="DepartmentName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
         </EntityType>
@@ -1311,6 +1332,7 @@
           <EntitySet Name="Assets" EntityType="Self.Assets" />
           <EntitySet Name="AssetStatuses" EntityType="Self.AssetStatuses" />
           <EntitySet Name="Categories" EntityType="Self.Categories" />
+          <EntitySet Name="DashboardStats" EntityType="Self.DashboardStats" />
           <EntitySet Name="Departments" EntityType="Self.Departments" />
           <EntitySet Name="Employees" EntityType="Self.Employees" />
           <EntitySet Name="Locations" EntityType="Self.Locations" />
@@ -1451,9 +1473,8 @@
             <Parameter Name="owner_id" Mode="In" Type="Int32" />
             <Parameter Name="new_diagramname" Mode="In" Type="String" />
           </FunctionImport>
-          <FunctionImport Name="sp_upgraddiagrams" />
-          <EntitySet Name="DashboardStats" EntityType="AssetControlDBModel.DashboardStats" />
           <FunctionImport Name="sp_UpdateDashboardStats" />
+          <FunctionImport Name="sp_upgraddiagrams" />
         </EntityContainer>
         <ComplexType Name="sp_helpdiagramdefinition_Result">
           <Property Type="Int32" Name="version" Nullable="true" />
@@ -1466,21 +1487,6 @@
           <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
           <Property Type="Int32" Name="OwnerID" Nullable="false" />
         </ComplexType>
-        <EntityType Name="DashboardStats">
-          <Key>
-            <PropertyRef Name="StatsID" />
-          </Key>
-          <Property Name="StatsID" Type="Int32" Nullable="false" />
-          <Property Name="TotalAssets" Type="Int32" />
-          <Property Name="ActiveAssets" Type="Int32" />
-          <Property Name="InStorageAssets" Type="Int32" />
-          <Property Name="InRepairAssets" Type="Int32" />
-          <Property Name="DisposedAssets" Type="Int32" />
-          <Property Name="TotalValue" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="MovementsThisMonth" Type="Int32" />
-          <Property Name="MaintenanceThisMonth" Type="Int32" />
-          <Property Name="LastUpdated" Type="DateTime" Precision="3" />
-        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1556,6 +1562,22 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="DashboardStats">
+            <EntityTypeMapping TypeName="AssetControlDBModel.DashboardStats">
+              <MappingFragment StoreEntitySet="DashboardStats">
+                <ScalarProperty Name="StatsID" ColumnName="StatsID" />
+                <ScalarProperty Name="TotalAssets" ColumnName="TotalAssets" />
+                <ScalarProperty Name="ActiveAssets" ColumnName="ActiveAssets" />
+                <ScalarProperty Name="InStorageAssets" ColumnName="InStorageAssets" />
+                <ScalarProperty Name="InRepairAssets" ColumnName="InRepairAssets" />
+                <ScalarProperty Name="DisposedAssets" ColumnName="DisposedAssets" />
+                <ScalarProperty Name="TotalValue" ColumnName="TotalValue" />
+                <ScalarProperty Name="MovementsThisMonth" ColumnName="MovementsThisMonth" />
+                <ScalarProperty Name="MaintenanceThisMonth" ColumnName="MaintenanceThisMonth" />
+                <ScalarProperty Name="LastUpdated" ColumnName="LastUpdated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Departments">
             <EntityTypeMapping TypeName="AssetControlDBModel.Departments">
               <MappingFragment StoreEntitySet="Departments">
@@ -1578,6 +1600,7 @@
                 <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
                 <ScalarProperty Name="HireDate" ColumnName="HireDate" />
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Photo" ColumnName="Photo" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1739,6 +1762,7 @@
                 <ScalarProperty Name="FullName" ColumnName="FullName" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="HireDate" ColumnName="HireDate" />
                 <ScalarProperty Name="PositionName" ColumnName="PositionName" />
                 <ScalarProperty Name="DepartmentName" ColumnName="DepartmentName" />
               </MappingFragment>
@@ -1769,24 +1793,8 @@
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="sp_MoveAsset" FunctionName="Хранилище AssetControlDBModel.sp_MoveAsset" />
           <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="Хранилище AssetControlDBModel.sp_renamediagram" />
-          <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="Хранилище AssetControlDBModel.sp_upgraddiagrams" />
-          <EntitySetMapping Name="DashboardStats">
-            <EntityTypeMapping TypeName="AssetControlDBModel.DashboardStats">
-              <MappingFragment StoreEntitySet="DashboardStats">
-                <ScalarProperty Name="LastUpdated" ColumnName="LastUpdated" />
-                <ScalarProperty Name="MaintenanceThisMonth" ColumnName="MaintenanceThisMonth" />
-                <ScalarProperty Name="MovementsThisMonth" ColumnName="MovementsThisMonth" />
-                <ScalarProperty Name="TotalValue" ColumnName="TotalValue" />
-                <ScalarProperty Name="DisposedAssets" ColumnName="DisposedAssets" />
-                <ScalarProperty Name="InRepairAssets" ColumnName="InRepairAssets" />
-                <ScalarProperty Name="InStorageAssets" ColumnName="InStorageAssets" />
-                <ScalarProperty Name="ActiveAssets" ColumnName="ActiveAssets" />
-                <ScalarProperty Name="TotalAssets" ColumnName="TotalAssets" />
-                <ScalarProperty Name="StatsID" ColumnName="StatsID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="sp_UpdateDashboardStats" FunctionName="Хранилище AssetControlDBModel.sp_UpdateDashboardStats" />
+          <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="Хранилище AssetControlDBModel.sp_upgraddiagrams" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

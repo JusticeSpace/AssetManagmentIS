@@ -4,27 +4,28 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="948547ca93c24c84a0d019a63c5c86ae" Name="Diagram1">
+      <Diagram DiagramId="007bb7f4172844d4a6cfd45ec077af5d" Name="Diagram1">
         <EntityTypeShape EntityType="AssetControlDBModel.AssetDisposals" Width="1.5" PointX="8.25" PointY="5.125" IsExpanded="true" />
         <EntityTypeShape EntityType="AssetControlDBModel.AssetMovements" Width="1.5" PointX="3" PointY="5" IsExpanded="true" />
         <EntityTypeShape EntityType="AssetControlDBModel.Assets" Width="1.5" PointX="6" PointY="3.25" IsExpanded="true" />
         <EntityTypeShape EntityType="AssetControlDBModel.AssetStatuses" Width="1.5" PointX="3.75" PointY="9.125" IsExpanded="true" />
         <EntityTypeShape EntityType="AssetControlDBModel.Categories" Width="1.5" PointX="3.75" PointY="11.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="AssetControlDBModel.DashboardStats" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="AssetControlDBModel.Departments" Width="1.5" PointX="1.5" PointY="14" IsExpanded="true" />
-        <EntityTypeShape EntityType="AssetControlDBModel.Employees" Width="1.5" PointX="1.5" PointY="17.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="AssetControlDBModel.Employees" Width="1.5" PointX="1.5" PointY="17.125" IsExpanded="true" />
         <EntityTypeShape EntityType="AssetControlDBModel.Locations" Width="1.5" PointX="0.75" PointY="5.375" IsExpanded="true" />
         <EntityTypeShape EntityType="AssetControlDBModel.Maintenance" Width="1.5" PointX="11.25" PointY="5.125" IsExpanded="true" />
         <EntityTypeShape EntityType="AssetControlDBModel.MaintenanceTypes" Width="1.5" PointX="9" PointY="1.75" IsExpanded="true" />
         <EntityTypeShape EntityType="AssetControlDBModel.Manufacturers" Width="1.5" PointX="3.75" PointY="14.25" IsExpanded="true" />
         <EntityTypeShape EntityType="AssetControlDBModel.Positions" Width="1.5" PointX="1.5" PointY="22.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="AssetControlDBModel.sysdiagrams" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AssetControlDBModel.sysdiagrams" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="AssetControlDBModel.UserRoles" Width="1.5" PointX="1.5" PointY="25" IsExpanded="true" />
         <EntityTypeShape EntityType="AssetControlDBModel.Users" Width="1.5" PointX="3.75" PointY="18.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="AssetControlDBModel.vw_AssetsByCategory" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="AssetControlDBModel.vw_AssetsByDepartment" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AssetControlDBModel.vw_AssetsByCategory" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AssetControlDBModel.vw_AssetsByDepartment" Width="1.5" PointX="0.75" PointY="9.75" IsExpanded="true" />
         <EntityTypeShape EntityType="AssetControlDBModel.vw_AssetsFullInfo" Width="1.5" PointX="8.75" PointY="9.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="AssetControlDBModel.vw_MovementHistory" Width="1.5" PointX="0.75" PointY="9.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="AssetControlDBModel.vw_UsersInfo" Width="1.5" PointX="5.75" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AssetControlDBModel.vw_MovementHistory" Width="1.5" PointX="5.75" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AssetControlDBModel.vw_UsersInfo" Width="1.5" PointX="10.75" PointY="9.75" IsExpanded="true" />
         <AssociationConnector Association="AssetControlDBModel.FK_Disposal_ApprovedBy" ManuallyRouted="false" />
         <AssociationConnector Association="AssetControlDBModel.FK_Disposal_Asset" ManuallyRouted="false" />
         <AssociationConnector Association="AssetControlDBModel.FK_Disposal_CreatedBy" ManuallyRouted="false" />
@@ -46,7 +47,6 @@
         <AssociationConnector Association="AssetControlDBModel.FK_Maintenance_CreatedBy" ManuallyRouted="false" />
         <AssociationConnector Association="AssetControlDBModel.FK_Maintenance_Type" ManuallyRouted="false" />
         <AssociationConnector Association="AssetControlDBModel.FK_Users_Role" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="AssetControlDBModel.DashboardStats" Width="1.5" PointX="11.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
