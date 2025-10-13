@@ -23,20 +23,42 @@
         </Style>
 
         <Style x:Key="QuickActionButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-            <Setter Property="Height" Value="80"/>
+            <Setter Property="Height" Value="120"/>
             <Setter Property="Margin" Value="8"/>
-            <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="12"/>
+            <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="16"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="#475569"/>
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" Direction="-90" ShadowDepth="2" Opacity="0.05"/>
+                </Setter.Value>
+            </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#F8FAFC"/>
-                    <Setter Property="BorderBrush" Value="#CBD5E1"/>
+                    <Setter Property="BorderBrush" Value="#6366F1"/>
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect BlurRadius="15" Direction="-90" ShadowDepth="3" Opacity="0.15" Color="#6366F1"/>
+                        </Setter.Value>
+                    </Setter>
                 </Trigger>
             </Style.Triggers>
+        </Style>
+
+        <Style x:Key="InfoCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="12,0"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="15" Direction="-90" ShadowDepth="3" Opacity="0.08"/>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Page.Resources>
 
@@ -46,229 +68,291 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Приветствие -->
-            <Border Grid.Row="0" CornerRadius="20" Padding="32" Margin="0,0,0,24">
+            <!-- ============================================ -->
+            <!-- ПРИВЕТСТВЕННЫЙ БАННЕР -->
+            <!-- ============================================ -->
+            <Border Grid.Row="0" CornerRadius="20" Padding="40,32" Margin="0,0,0,32">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                         <GradientStop Color="#6366F1" Offset="0"/>
-                        <GradientStop Color="#8B5CF6" Offset="0.7"/>
+                        <GradientStop Color="#8B5CF6" Offset="0.5"/>
                         <GradientStop Color="#EC4899" Offset="1"/>
                     </LinearGradientBrush>
                 </Border.Background>
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="25" Direction="-90" ShadowDepth="5" Opacity="0.2" Color="#6366F1"/>
+                </Border.Effect>
                 <Grid>
+                    <!-- Декоративные элементы -->
                     <Canvas>
-                        <Ellipse Width="200" Height="200" Fill="#20FFFFFF" Canvas.Right="-50" Canvas.Top="-50"/>
-                        <Ellipse Width="120" Height="120" Fill="#30FFFFFF" Canvas.Left="-30" Canvas.Bottom="-30"/>
+                        <Ellipse Width="250" Height="250" Fill="#15FFFFFF" Canvas.Right="-80" Canvas.Top="-80"/>
+                        <Ellipse Width="150" Height="150" Fill="#20FFFFFF" Canvas.Left="-40" Canvas.Bottom="-40"/>
+                        <Ellipse Width="100" Height="100" Fill="#25FFFFFF" Canvas.Right="150" Canvas.Bottom="-30"/>
                     </Canvas>
+
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
+
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <TextBlock x:Name="txtWelcome" Text="Добро пожаловать, Администратор!" FontSize="28" FontWeight="Bold" Foreground="White" Margin="0,0,0,8"/>
-                            <TextBlock Text="Обзор системы управления активами" FontSize="16" Foreground="#E0E7FF"/>
-                            <TextBlock x:Name="txtLastUpdate" Text="Последнее обновление: сегодня в 14:30" FontSize="14" Foreground="#C7D2FE" Margin="0,8,0,0"/>
+                            <TextBlock x:Name="txtWelcome" Text="Добро пожаловать!" FontSize="32" FontWeight="Bold" Foreground="White" Margin="0,0,0,8"/>
+                            <TextBlock Text="Информационная система учёта активов" FontSize="18" Foreground="#E0E7FF" Margin="0,0,0,4"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                <Border Background="#20FFFFFF" CornerRadius="8" Padding="12,6" Margin="0,0,12,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="CalendarToday" Width="16" Height="16" Foreground="White" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        <TextBlock x:Name="txtCurrentDate" Text="Загрузка..." FontSize="13" Foreground="White" FontWeight="Medium"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Background="#20FFFFFF" CornerRadius="8" Padding="12,6">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="AccountCircle" Width="16" Height="16" Foreground="White" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        <TextBlock x:Name="txtUserRole" Text="Пользователь" FontSize="13" Foreground="White" FontWeight="Medium"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
                         </StackPanel>
-                        <Border Grid.Column="1" Background="#20FFFFFF" CornerRadius="16" Width="80" Height="80" VerticalAlignment="Center">
-                            <materialDesign:PackIcon Kind="ViewDashboard" Width="40" Height="40" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                        <Border Grid.Column="1" Background="#20FFFFFF" CornerRadius="20" Width="100" Height="100" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="ViewDashboard" Width="50" Height="50" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                     </Grid>
                 </Grid>
             </Border>
 
-            <!-- Карточки статистики -->
-            <UniformGrid Grid.Row="1" Rows="1" Columns="4" Margin="0,0,0,12">
+            <!-- ============================================ -->
+            <!-- СТАТИСТИКА АКТИВОВ -->
+            <!-- ============================================ -->
+            <UniformGrid Grid.Row="1" Rows="1" Columns="4" Margin="0,0,0,32">
                 <!-- Всего активов -->
                 <Border Style="{StaticResource StatCardStyle}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
-                            <Border Background="#EEF2FF" CornerRadius="12" Width="48" Height="48" Margin="0,0,16,0">
-                                <materialDesign:PackIcon Kind="Package" Width="24" Height="24" Foreground="#6366F1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
+                            <Border Background="#EEF2FF" CornerRadius="14" Width="56" Height="56" Margin="0,0,16,0">
+                                <materialDesign:PackIcon Kind="Package" Width="28" Height="28" Foreground="#6366F1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="Всего активов" FontSize="14" Foreground="#64748B" FontWeight="Medium"/>
-                                <TextBlock x:Name="txtTotalAssetsChange" Text="Загрузка..." FontSize="12" Foreground="#10B981"/>
+                                <TextBlock Text="Всего активов" FontSize="15" Foreground="#64748B" FontWeight="SemiBold"/>
+                                <TextBlock x:Name="txtTotalAssetsChange" Text="В системе" FontSize="12" Foreground="#94A3B8" Margin="0,2,0,0"/>
                             </StackPanel>
                         </StackPanel>
-                        <TextBlock Grid.Row="1" x:Name="txtTotalAssets" Text="0" FontSize="36" FontWeight="Bold" Foreground="#1F2937" Margin="0,0,0,8"/>
-                        <ProgressBar Grid.Row="2" Height="4" Value="100" Background="#F1F5F9" Foreground="#6366F1"/>
+                        <TextBlock Grid.Row="1" x:Name="txtTotalAssets" Text="0" FontSize="42" FontWeight="Bold" Foreground="#1F2937" VerticalAlignment="Center"/>
+                        <ProgressBar Grid.Row="2" Height="6" Value="100" Background="#F1F5F9" Foreground="#6366F1" BorderThickness="0"/>
                     </Grid>
                 </Border>
+
                 <!-- Активные -->
                 <Border Style="{StaticResource StatCardStyle}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
-                            <Border Background="#ECFDF5" CornerRadius="12" Width="48" Height="48" Margin="0,0,16,0">
-                                <materialDesign:PackIcon Kind="CheckCircle" Width="24" Height="24" Foreground="#10B981" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
+                            <Border Background="#ECFDF5" CornerRadius="14" Width="56" Height="56" Margin="0,0,16,0">
+                                <materialDesign:PackIcon Kind="CheckCircle" Width="28" Height="28" Foreground="#10B981" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="Активные" FontSize="14" Foreground="#64748B" FontWeight="Medium"/>
-                                <TextBlock x:Name="txtActiveAssetsPercent" Text="0% от общего числа" FontSize="12" Foreground="#10B981"/>
+                                <TextBlock Text="Активные" FontSize="15" Foreground="#64748B" FontWeight="SemiBold"/>
+                                <TextBlock x:Name="txtActiveAssetsPercent" Text="0% от общего" FontSize="12" Foreground="#10B981" Margin="0,2,0,0" FontWeight="Medium"/>
                             </StackPanel>
                         </StackPanel>
-                        <TextBlock Grid.Row="1" x:Name="txtActiveAssets" Text="0" FontSize="36" FontWeight="Bold" Foreground="#10B981" Margin="0,0,0,8"/>
-                        <ProgressBar Grid.Row="2" x:Name="progressActive" Height="4" Value="0" Background="#F1F5F9" Foreground="#10B981"/>
+                        <TextBlock Grid.Row="1" x:Name="txtActiveAssets" Text="0" FontSize="42" FontWeight="Bold" Foreground="#10B981" VerticalAlignment="Center"/>
+                        <ProgressBar Grid.Row="2" x:Name="progressActive" Height="6" Value="0" Background="#F1F5F9" Foreground="#10B981" BorderThickness="0"/>
                     </Grid>
                 </Border>
+
                 <!-- На ремонте -->
                 <Border Style="{StaticResource StatCardStyle}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
-                            <Border Background="#FEF3C7" CornerRadius="12" Width="48" Height="48" Margin="0,0,16,0">
-                                <materialDesign:PackIcon Kind="Wrench" Width="24" Height="24" Foreground="#F59E0B" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
+                            <Border Background="#FEF3C7" CornerRadius="14" Width="56" Height="56" Margin="0,0,16,0">
+                                <materialDesign:PackIcon Kind="Wrench" Width="28" Height="28" Foreground="#F59E0B" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="На ремонте" FontSize="14" Foreground="#64748B" FontWeight="Medium"/>
-                                <TextBlock x:Name="txtInRepairInfo" Text="Требуют внимания" FontSize="12" Foreground="#F59E0B"/>
+                                <TextBlock Text="На ремонте" FontSize="15" Foreground="#64748B" FontWeight="SemiBold"/>
+                                <TextBlock x:Name="txtInRepairInfo" Text="Требуют внимания" FontSize="12" Foreground="#F59E0B" Margin="0,2,0,0" FontWeight="Medium"/>
                             </StackPanel>
                         </StackPanel>
-                        <TextBlock Grid.Row="1" x:Name="txtInRepair" Text="0" FontSize="36" FontWeight="Bold" Foreground="#F59E0B" Margin="0,0,0,8"/>
-                        <ProgressBar Grid.Row="2" x:Name="progressRepair" Height="4" Value="0" Background="#F1F5F9" Foreground="#F59E0B"/>
+                        <TextBlock Grid.Row="1" x:Name="txtInRepair" Text="0" FontSize="42" FontWeight="Bold" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                        <ProgressBar Grid.Row="2" x:Name="progressRepair" Height="6" Value="0" Background="#F1F5F9" Foreground="#F59E0B" BorderThickness="0"/>
                     </Grid>
                 </Border>
+
                 <!-- Списано -->
                 <Border Style="{StaticResource StatCardStyle}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
-                            <Border Background="#FEF2F2" CornerRadius="12" Width="48" Height="48" Margin="0,0,16,0">
-                                <materialDesign:PackIcon Kind="Cancel" Width="24" Height="24" Foreground="#EF4444" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
+                            <Border Background="#FEF2F2" CornerRadius="14" Width="56" Height="56" Margin="0,0,16,0">
+                                <materialDesign:PackIcon Kind="DeleteForever" Width="28" Height="28" Foreground="#EF4444" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="Списано" FontSize="14" Foreground="#64748B" FontWeight="Medium"/>
-                                <TextBlock x:Name="txtDisposedInfo" Text="За текущий год" FontSize="12" Foreground="#EF4444"/>
+                                <TextBlock Text="Списано" FontSize="15" Foreground="#64748B" FontWeight="SemiBold"/>
+                                <TextBlock x:Name="txtDisposedInfo" Text="За весь период" FontSize="12" Foreground="#EF4444" Margin="0,2,0,0" FontWeight="Medium"/>
                             </StackPanel>
                         </StackPanel>
-                        <TextBlock Grid.Row="1" x:Name="txtDisposed" Text="0" FontSize="36" FontWeight="Bold" Foreground="#EF4444" Margin="0,0,0,8"/>
-                        <ProgressBar Grid.Row="2" x:Name="progressDisposed" Height="4" Value="0" Background="#F1F5F9" Foreground="#EF4444"/>
+                        <TextBlock Grid.Row="1" x:Name="txtDisposed" Text="0" FontSize="42" FontWeight="Bold" Foreground="#EF4444" VerticalAlignment="Center"/>
+                        <ProgressBar Grid.Row="2" x:Name="progressDisposed" Height="6" Value="0" Background="#F1F5F9" Foreground="#EF4444" BorderThickness="0"/>
                     </Grid>
                 </Border>
             </UniformGrid>
 
-            <!-- Последние действия и Быстрые действия -->
-            <Grid Grid.Row="2" Margin="0,12,0,0">
+            <!-- ============================================ -->
+            <!-- БЫСТРЫЕ ДЕЙСТВИЯ (С ПРОВЕРКОЙ РОЛИ) -->
+            <!-- ============================================ -->
+            <Border Grid.Row="2" Style="{StaticResource StatCardStyle}" Margin="12,0,12,32" Padding="32">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,24">
+                        <Border Background="#EEF2FF" CornerRadius="12" Width="40" Height="40" Margin="0,0,16,0">
+                            <materialDesign:PackIcon Kind="Flash" Width="22" Height="22" Foreground="#6366F1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Быстрые действия" FontSize="20" FontWeight="Bold" Foreground="#1F2937"/>
+                            <TextBlock Text="Переход к основным разделам системы" FontSize="14" Foreground="#64748B" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- АДАПТИВНАЯ СЕТКА (2 или 1 кнопка в зависимости от роли) -->
+                    <Grid Grid.Row="1" x:Name="QuickActionsGrid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- КНОПКА "АКТИВЫ" - доступна всем -->
+                        <Button x:Name="btnGoToAssets" Grid.Column="0" Style="{StaticResource QuickActionButtonStyle}" Click="BtnGoToAssets_Click">
+                            <StackPanel>
+                                <Border Background="#EEF2FF" CornerRadius="12" Width="48" Height="48" Margin="0,0,0,12">
+                                    <materialDesign:PackIcon Kind="Package" Width="24" Height="24" Foreground="#6366F1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Активы" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="#1F2937"/>
+                                <TextBlock Text="Управление активами" FontSize="12" HorizontalAlignment="Center" Foreground="#64748B" Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- КНОПКА "СОТРУДНИКИ" - только для Admin и Manager -->
+                        <Button x:Name="btnGoToEmployees" Grid.Column="1" Style="{StaticResource QuickActionButtonStyle}" Click="BtnGoToEmployees_Click">
+                            <StackPanel>
+                                <Border Background="#ECFDF5" CornerRadius="12" Width="48" Height="48" Margin="0,0,0,12">
+                                    <materialDesign:PackIcon Kind="AccountGroup" Width="24" Height="24" Foreground="#10B981" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Сотрудники" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="#1F2937"/>
+                                <TextBlock Text="База сотрудников" FontSize="12" HorizontalAlignment="Center" Foreground="#64748B" Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- ============================================ -->
+            <!-- ИНФОРМАЦИОННЫЕ КАРТОЧКИ -->
+            <!-- ============================================ -->
+            <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Последние действия -->
-                <Border Grid.Column="0" Style="{StaticResource StatCardStyle}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,24">
-                            <Border Background="#FEF3C7" CornerRadius="8" Width="32" Height="32" Margin="0,0,12,0">
-                                <materialDesign:PackIcon Kind="History" Width="18" Height="18" Foreground="#F59E0B" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <!-- Статистика сотрудников -->
+                <Border Grid.Column="0" Style="{StaticResource InfoCardStyle}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <Border Background="#F3E8FF" CornerRadius="10" Width="36" Height="36" Margin="0,0,12,0">
+                                <materialDesign:PackIcon Kind="AccountGroup" Width="20" Height="20" Foreground="#8B5CF6" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="Последние действия" FontSize="18" FontWeight="Bold" Foreground="#1F2937"/>
-                                <TextBlock Text="Недавняя активность в системе" FontSize="14" Foreground="#64748B"/>
+                                <TextBlock Text="Сотрудники" FontSize="16" FontWeight="Bold" Foreground="#1F2937"/>
+                                <TextBlock Text="Общая информация" FontSize="12" Foreground="#64748B"/>
                             </StackPanel>
                         </StackPanel>
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" MaxHeight="300">
-                            <ItemsControl x:Name="RecentActionsItemsControl">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Background="#F8FAFC" CornerRadius="8" Padding="16" Margin="0,0,0,8">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <Border Grid.Column="0" Background="{Binding IconBackgroundColor}" CornerRadius="8" Width="32" Height="32" Margin="0,0,12,0">
-                                                    <materialDesign:PackIcon Kind="{Binding Icon}" Width="16" Height="16" Foreground="{Binding IconColor}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding Action}" FontSize="14" FontWeight="Medium" Foreground="#1F2937"/>
-                                                    <TextBlock Text="{Binding Description}" FontSize="12" Foreground="#64748B" TextTrimming="CharacterEllipsis"/>
-                                                </StackPanel>
-                                                <TextBlock Grid.Column="2" Text="{Binding Time}" FontSize="11" VerticalAlignment="Center" Foreground="#94A3B8"/>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
-                    </Grid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="#F8FAFC" CornerRadius="10" Padding="16" Margin="0,0,6,0">
+                                <StackPanel>
+                                    <TextBlock Text="Всего" FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                                    <TextBlock x:Name="txtTotalEmployees" Text="0" FontSize="28" FontWeight="Bold" Foreground="#8B5CF6" Margin="0,4,0,0"/>
+                                    <TextBlock Text="сотрудников" FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Background="#F8FAFC" CornerRadius="10" Padding="16" Margin="6,0,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="Отделов" FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                                    <TextBlock x:Name="txtTotalDepartments" Text="0" FontSize="28" FontWeight="Bold" Foreground="#8B5CF6" Margin="0,4,0,0"/>
+                                    <TextBlock Text="подразделений" FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
                 </Border>
 
-                <!-- Быстрые действия -->
-                <Border Grid.Column="1" Style="{StaticResource StatCardStyle}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,24">
-                            <Border Background="#EEF2FF" CornerRadius="8" Width="32" Height="32" Margin="0,0,12,0">
-                                <materialDesign:PackIcon Kind="Flash" Width="18" Height="18" Foreground="#6366F1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <!-- Категории активов -->
+                <Border Grid.Column="1" Style="{StaticResource InfoCardStyle}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <Border Background="#FCE7F3" CornerRadius="10" Width="36" Height="36" Margin="0,0,12,0">
+                                <materialDesign:PackIcon Kind="ShapeOutline" Width="20" Height="20" Foreground="#EC4899" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="Быстрые действия" FontSize="18" FontWeight="Bold" Foreground="#1F2937"/>
-                                <TextBlock Text="Часто используемые операции" FontSize="14" Foreground="#64748B"/>
+                                <TextBlock Text="Категории" FontSize="16" FontWeight="Bold" Foreground="#1F2937"/>
+                                <TextBlock Text="Типы активов" FontSize="12" Foreground="#64748B"/>
                             </StackPanel>
                         </StackPanel>
-                        <UniformGrid Grid.Row="1" Columns="2" Rows="2">
-                            <Button x:Name="btnAddAsset" Style="{StaticResource QuickActionButtonStyle}" Click="BtnAddAsset_Click">
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="#F8FAFC" CornerRadius="10" Padding="16" Margin="0,0,6,0">
                                 <StackPanel>
-                                    <Border Background="#EEF2FF" CornerRadius="8" Width="32" Height="32" Margin="0,0,0,8">
-                                        <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" Foreground="#6366F1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                    <TextBlock Text="Добавить актив" FontSize="13" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Категорий" FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                                    <TextBlock x:Name="txtTotalCategories" Text="0" FontSize="28" FontWeight="Bold" Foreground="#EC4899" Margin="0,4,0,0"/>
+                                    <TextBlock Text="в системе" FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0"/>
                                 </StackPanel>
-                            </Button>
-                            <Button x:Name="btnExportReport" Style="{StaticResource QuickActionButtonStyle}" Click="BtnExportReport_Click">
+                            </Border>
+
+                            <Border Grid.Column="1" Background="#F8FAFC" CornerRadius="10" Padding="16" Margin="6,0,0,0">
                                 <StackPanel>
-                                    <Border Background="#FEF3C7" CornerRadius="8" Width="32" Height="32" Margin="0,0,0,8">
-                                        <materialDesign:PackIcon Kind="FileExport" Width="18" Height="18" Foreground="#F59E0B" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                    <TextBlock Text="Экспорт отчета" FontSize="13" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Локаций" FontSize="12" Foreground="#64748B" FontWeight="Medium"/>
+                                    <TextBlock x:Name="txtTotalLocations" Text="0" FontSize="28" FontWeight="Bold" Foreground="#EC4899" Margin="0,4,0,0"/>
+                                    <TextBlock Text="размещений" FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0"/>
                                 </StackPanel>
-                            </Button>
-                            <Button x:Name="btnNotifications" Style="{StaticResource QuickActionButtonStyle}" Click="BtnNotifications_Click">
-                                <StackPanel>
-                                    <Border Background="#F3F4F6" CornerRadius="8" Width="32" Height="32" Margin="0,0,0,8">
-                                        <materialDesign:PackIcon Kind="Bell" Width="18" Height="18" Foreground="#6B7280" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                    <TextBlock Text="Уведомления" FontSize="13" HorizontalAlignment="Center"/>
-                                </StackPanel>
-                            </Button>
-                            <Button x:Name="btnHelp" Style="{StaticResource QuickActionButtonStyle}" Click="BtnHelp_Click">
-                                <StackPanel>
-                                    <Border Background="#EDF2FF" CornerRadius="8" Width="32" Height="32" Margin="0,0,0,8">
-                                        <materialDesign:PackIcon Kind="HelpCircle" Width="18" Height="18" Foreground="#8B5CF6" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                    <TextBlock Text="Справка" FontSize="13" HorizontalAlignment="Center"/>
-                                </StackPanel>
-                            </Button>
-                        </UniformGrid>
-                    </Grid>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
                 </Border>
             </Grid>
         </Grid>

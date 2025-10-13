@@ -13,6 +13,7 @@ namespace AssetManagment.Windows
         private readonly Users _currentUser;
         private Assets _entity;
         private bool _isDirty;
+        private int? _disposedStatusId; // ID статуса "Списан"
 
         public AssetEditorWindow(AssetControlDBEntities context, Users currentUser, int? assetId = null)
         {
@@ -58,8 +59,8 @@ namespace AssetManagment.Windows
                 cmb.SelectionChanged += (_, __) => { _isDirty = true; ValidateForm(); };
 
             dpPurchaseDate.SelectedDateChanged += (_, __) => _isDirty = true;
-            chkIsActive.Checked += (_, __) => _isDirty = true;
-            chkIsActive.Unchecked += (_, __) => _isDirty = true;
+
+            // chkIsActive - только отображение, без хендлеров
         }
 
         private void SetModeAdd()
@@ -69,7 +70,7 @@ namespace AssetManagment.Windows
             SubtitleText.Text = "Заполните обязательные поля со знаком •";
             MetaPanel.Visibility = Visibility.Collapsed;
             txtCode.IsReadOnly = false;
-            chkIsActive.IsChecked = true;
+            btnSave.IsEnabled = false; // включится после валидации
             ValidateForm();
         }
 
@@ -88,9 +89,16 @@ namespace AssetManagment.Windows
             cmbCategory.DisplayMemberPath = "CategoryName";
             cmbCategory.SelectedValuePath = "CategoryID";
 
-            cmbStatus.ItemsSource = _context.AssetStatuses.OrderBy(s => s.StatusName).ToList();
+            var statuses = _context.AssetStatuses.OrderBy(s => s.StatusName).ToList();
+            cmbStatus.ItemsSource = statuses;
             cmbStatus.DisplayMemberPath = "StatusName";
             cmbStatus.SelectedValuePath = "StatusID";
+
+            // найдём ID статуса "Списан"
+            _disposedStatusId = statuses
+                .Where(s => s.StatusName == "Списан")
+                .Select(s => (int?)s.StatusID)
+                .FirstOrDefault();
 
             cmbManufacturer.ItemsSource = _context.Manufacturers.OrderBy(m => m.ManufacturerName).ToList();
             cmbManufacturer.DisplayMemberPath = "ManufacturerName";
@@ -109,6 +117,14 @@ namespace AssetManagment.Windows
             cmbResponsible.SelectedValuePath = "EmployeeID";
         }
 
+        private bool ComputeIsActiveFromStatus(int statusId)
+        {
+            if (_disposedStatusId.HasValue)
+                return statusId != _disposedStatusId.Value;
+            // если "Списан" не найден в справочнике — считаем активным
+            return true;
+        }
+
         private void FillFields()
         {
             txtCode.Text = _entity.AssetCode;
@@ -125,7 +141,9 @@ namespace AssetManagment.Windows
             if (_entity.LocationID != 0) cmbLocation.SelectedValue = _entity.LocationID;
             if (_entity.ResponsibleEmployeeID.HasValue) cmbResponsible.SelectedValue = _entity.ResponsibleEmployeeID.Value;
 
-            chkIsActive.IsChecked = _entity.IsActive ?? true;
+            // IsActive — вычисляем из статуса
+            var sid = _entity.StatusID;
+            chkIsActive.IsChecked = ComputeIsActiveFromStatus(sid);
 
             var creator = _context.Users.FirstOrDefault(u => u.UserID == _entity.CreatedByUserID);
             var creatorName = creator?.Employees != null ? $"{creator.Employees.LastName} {creator.Employees.FirstName}" : "неизвестно";
@@ -146,11 +164,11 @@ namespace AssetManagment.Windows
         private bool ValidateForm()
         {
             ShowError(null);
-            if (string.IsNullOrWhiteSpace(txtCode.Text)) { ShowError("Введите код актива"); return false; }
-            if (string.IsNullOrWhiteSpace(txtName.Text)) { ShowError("Введите название"); return false; }
-            if (cmbCategory.SelectedValue == null) { ShowError("Выберите категорию"); return false; }
-            if (cmbStatus.SelectedValue == null) { ShowError("Выберите статус"); return false; }
-            if (cmbLocation.SelectedValue == null) { ShowError("Выберите локацию"); return false; }
+            if (string.IsNullOrWhiteSpace(txtCode.Text)) { ShowError("Введите код актива"); btnSave.IsEnabled = false; return false; }
+            if (string.IsNullOrWhiteSpace(txtName.Text)) { ShowError("Введите название"); btnSave.IsEnabled = false; return false; }
+            if (cmbCategory.SelectedValue == null) { ShowError("Выберите категорию"); btnSave.IsEnabled = false; return false; }
+            if (cmbStatus.SelectedValue == null) { ShowError("Выберите статус"); btnSave.IsEnabled = false; return false; }
+            if (cmbLocation.SelectedValue == null) { ShowError("Выберите локацию"); btnSave.IsEnabled = false; return false; }
             btnSave.IsEnabled = true;
             return true;
         }
@@ -162,7 +180,7 @@ namespace AssetManagment.Windows
             try
             {
                 decimal? price = null;
-                var rawPrice = txtPrice.Text.Replace("₽", "").Trim();
+                var rawPrice = (txtPrice.Text ?? "").Replace("₽", "").Trim();
                 if (!string.IsNullOrEmpty(rawPrice))
                 {
                     if (decimal.TryParse(rawPrice, NumberStyles.Any, CultureInfo.GetCultureInfo("ru-RU"), out decimal p) ||
@@ -174,7 +192,11 @@ namespace AssetManagment.Windows
                 if (_entity == null) // Создание
                 {
                     if (_context.Assets.Any(a => a.AssetCode == txtCode.Text)) { ShowError("Актив с таким кодом уже существует"); return; }
-                    _entity = new Assets { CreatedDate = DateTime.Now, CreatedByUserID = _currentUser.UserID };
+                    _entity = new Assets
+                    {
+                        CreatedDate = DateTime.Now,
+                        CreatedByUserID = _currentUser.UserID
+                    };
                     _context.Assets.Add(_entity);
                 }
                 else // Редактирование
@@ -186,16 +208,21 @@ namespace AssetManagment.Windows
                 _entity.AssetCode = txtCode.Text.Trim();
                 _entity.AssetName = txtName.Text.Trim();
                 _entity.Description = string.IsNullOrWhiteSpace(txtDescription.Text) ? null : txtDescription.Text.Trim();
-                _entity.CategoryID = (int)cmbCategory.SelectedValue;
-                _entity.StatusID = (int)cmbStatus.SelectedValue;
-                _entity.LocationID = (int)cmbLocation.SelectedValue;
-                _entity.ManufacturerID = cmbManufacturer.SelectedValue as int?;
+                _entity.CategoryID = Convert.ToInt32(cmbCategory.SelectedValue);
+                _entity.StatusID = Convert.ToInt32(cmbStatus.SelectedValue);
+                _entity.LocationID = Convert.ToInt32(cmbLocation.SelectedValue);
+
+                // фикс: SelectedValue -> int?
+                _entity.ManufacturerID = (cmbManufacturer.SelectedValue != null) ? Convert.ToInt32(cmbManufacturer.SelectedValue) : (int?)null;
                 _entity.Model = string.IsNullOrWhiteSpace(txtModel.Text) ? null : txtModel.Text.Trim();
                 _entity.SerialNumber = string.IsNullOrWhiteSpace(txtSerial.Text) ? null : txtSerial.Text.Trim();
                 _entity.PurchaseDate = dpPurchaseDate.SelectedDate;
                 _entity.PurchasePrice = price;
-                _entity.ResponsibleEmployeeID = cmbResponsible.SelectedValue as int?;
-                _entity.IsActive = chkIsActive.IsChecked ?? true;
+
+                _entity.ResponsibleEmployeeID = (cmbResponsible.SelectedValue != null) ? Convert.ToInt32(cmbResponsible.SelectedValue) : (int?)null;
+
+                // IsActive вычисляем из статуса
+                _entity.IsActive = ComputeIsActiveFromStatus(_entity.StatusID);
 
                 _context.SaveChanges();
                 _isDirty = false;
@@ -212,8 +239,8 @@ namespace AssetManagment.Windows
             }
             catch (Exception ex)
             {
-                var innerExceptionMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                ShowError($"Ошибка сохранения: {innerExceptionMessage}");
+                var innerMessage = ex.InnerException?.Message ?? ex.Message;
+                ShowError($"Ошибка сохранения: {innerMessage}");
             }
         }
 
@@ -222,6 +249,7 @@ namespace AssetManagment.Windows
         private void SaveCommand_Executed(object sender, ExecutedRoutedEventArgs e) => DoSave();
         private void SaveCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
         private void CloseCommand_Executed(object sender, ExecutedRoutedEventArgs e) => Close();
+
         private void OnWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (_isDirty)
@@ -230,13 +258,24 @@ namespace AssetManagment.Windows
                 if (r == MessageBoxResult.No) e.Cancel = true;
             }
         }
-        private void GenerateCode_Click(object sender, RoutedEventArgs e) => txtCode.Text = $"AST-{DateTime.Now:yyyyMMddHHmmss}";
-        private void Header_MouseDown(object sender, MouseButtonEventArgs e) { if (e.LeftButton == MouseButtonState.Pressed) DragMove(); }
+
+        private void GenerateCode_Click(object sender, RoutedEventArgs e) =>
+            txtCode.Text = $"AST-{DateTime.Now:yyyyMMddHHmmss}";
+
+        private void Header_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed) DragMove();
+        }
+
         private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
+
         private void Price_Paste(object sender, DataObjectPastingEventArgs e)
         {
-            if (e.SourceDataObject.GetData(DataFormats.Text) is string text && !Regex.IsMatch(text, @"^[0-9\.,]+$")) e.CancelCommand();
+            if (e.SourceDataObject.GetData(DataFormats.Text) is string text && !Regex.IsMatch(text, @"^[0-9\.,]+$"))
+                e.CancelCommand();
         }
-        private void Price_PreviewTextInput(object sender, TextCompositionEventArgs e) => e.Handled = !Regex.IsMatch(e.Text, @"[0-9\.,]");
+
+        private void Price_PreviewTextInput(object sender, TextCompositionEventArgs e) =>
+            e.Handled = !Regex.IsMatch(e.Text, @"[0-9\.,]");
     }
 }

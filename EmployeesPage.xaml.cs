@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -50,7 +48,7 @@ namespace AssetManagment.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки фильтров: {ex.Message}");
+                MessageBox.Show($"Ошибка загрузки фильтров: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -58,32 +56,32 @@ namespace AssetManagment.Pages
         {
             try
             {
-                // --- ИСПРАВЛЕНИЕ: Убираем медленный подзапрос ---
-                // Теперь все данные, включая HireDate, берутся из одного представления vw_UsersInfo
-                _allEmployees = _context.vw_UsersInfo
-                    .Join(_context.Employees, // Присоединяем фото
-                          userInfo => userInfo.EmployeeID,
-                          employee => employee.EmployeeID,
-                          (userInfo, employee) => new { UserInfo = userInfo, employee.Photo })
-                    .Select(e => new EmployeeViewModel
-                    {
-                        EmployeeID = e.UserInfo.EmployeeID,
-                        FullName = e.UserInfo.FullName,
-                        Email = e.UserInfo.Email,
-                        Phone = e.UserInfo.Phone,
-                        PositionName = e.UserInfo.PositionName,
-                        DepartmentName = e.UserInfo.DepartmentName,
-                        HireDate = e.UserInfo.HireDate ?? DateTime.MinValue,
-                        IsActive = e.UserInfo.UserIsActive ?? false,
-                        Photo = e.Photo
-                    }).ToList();
+                _allEmployees = (from emp in _context.Employees
+                                 join pos in _context.Positions on emp.PositionID equals pos.PositionID
+                                 join dep in _context.Departments on emp.DepartmentID equals dep.DepartmentID
+                                 join usr in _context.Users on emp.EmployeeID equals usr.EmployeeID into userGroup
+                                 from usr in userGroup.DefaultIfEmpty()
+                                 select new EmployeeViewModel
+                                 {
+                                     EmployeeID = emp.EmployeeID,
+                                     FullName = emp.LastName + " " + emp.FirstName +
+                                               (emp.MiddleName != null ? " " + emp.MiddleName : ""),
+                                     Email = emp.Email,
+                                     Phone = emp.Phone,
+                                     PositionName = pos.PositionName,
+                                     DepartmentName = dep.DepartmentName,
+                                     HireDate = emp.HireDate ?? DateTime.MinValue,
+                                     IsActive = usr.IsActive ?? false,
+                                     Photo = emp.Photo
+                                 }).ToList();
 
                 ApplyFilters();
                 LoadStatistics();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}");
+                MessageBox.Show($"Ошибка загрузки данных:\n\n{ex.Message}\n\n{ex.InnerException?.Message}",
+                               "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -102,39 +100,16 @@ namespace AssetManagment.Pages
         {
             if (App.CurrentUser == null) return;
             bool isManagerOrAdmin = App.CurrentUser.RoleID == 1 || App.CurrentUser.RoleID == 2;
-            bool isAdmin = App.CurrentUser.RoleID == 1;
 
+            // Скрываем кнопку добавления для обычных пользователей
             btnAddEmployee.Visibility = isManagerOrAdmin ? Visibility.Visible : Visibility.Collapsed;
 
-            dgEmployees.LoadingRow += (s, args) =>
-            {
-                var editButton = FindVisualChild<Button>(args.Row, "BtnEdit");
-                if (editButton != null) editButton.Visibility = isManagerOrAdmin ? Visibility.Visible : Visibility.Collapsed;
-
-                var toggleButton = FindVisualChild<Button>(args.Row, "BtnToggleStatus");
-                if (toggleButton != null) toggleButton.Visibility = isManagerOrAdmin ? Visibility.Visible : Visibility.Collapsed;
-
-                var deleteButton = FindVisualChild<Button>(args.Row, "BtnDeleteEmployee");
-                if (deleteButton != null) deleteButton.Visibility = isAdmin ? Visibility.Visible : Visibility.Collapsed;
-            };
-
+            // Скрываем колонку действий для обычных пользователей
             var actionsColumn = dgEmployees.Columns.LastOrDefault();
-            if (actionsColumn != null && !isManagerOrAdmin)
+            if (actionsColumn != null)
             {
-                actionsColumn.Visibility = Visibility.Collapsed;
+                actionsColumn.Visibility = isManagerOrAdmin ? Visibility.Visible : Visibility.Collapsed;
             }
-        }
-
-        public static T FindVisualChild<T>(DependencyObject parent, string name) where T : FrameworkElement
-        {
-            for (int i = 0; i < System.Windows.Media.VisualTreeHelper.GetChildrenCount(parent); i++)
-            {
-                var child = System.Windows.Media.VisualTreeHelper.GetChild(parent, i);
-                if (child is T element && element.Name == name) return element;
-                var result = FindVisualChild<T>(child, name);
-                if (result != null) return result;
-            }
-            return null;
         }
 
         private void ApplyFilters()
@@ -169,11 +144,11 @@ namespace AssetManagment.Pages
                     filteredList = filteredList.Where(e => e.PositionName == positionName);
             }
 
-            if (cmbStatusFilter.SelectedIndex == 1) // Активные
+            if (cmbStatusFilter.SelectedIndex == 1)
             {
                 filteredList = filteredList.Where(e => e.IsActive);
             }
-            else if (cmbStatusFilter.SelectedIndex == 2) // Неактивные
+            else if (cmbStatusFilter.SelectedIndex == 2)
             {
                 filteredList = filteredList.Where(e => !e.IsActive);
             }
@@ -181,13 +156,27 @@ namespace AssetManagment.Pages
             dgEmployees.ItemsSource = filteredList.ToList();
         }
 
+        // === НОВЫЙ МЕТОД: Двойной клик для редактирования ===
+        private void DgEmployees_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (App.CurrentUser == null || (App.CurrentUser.RoleID != 1 && App.CurrentUser.RoleID != 2))
+                return; // Без сообщения для обычных пользователей
+
+            var selectedEmployee = dgEmployees.SelectedItem as EmployeeViewModel;
+            if (selectedEmployee != null)
+            {
+                var win = new Windows.EmployeeEditorWindow(_context, App.CurrentUser, selectedEmployee.EmployeeID);
+                win.Owner = Window.GetWindow(this);
+                if (win.ShowDialog() == true) RefreshData();
+            }
+        }
+
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e) => ApplyFilters();
+
         private void CmbFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (IsLoaded) ApplyFilters();
         }
-
-        private void DgEmployees_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
 
         private void BtnAddEmployee_Click(object sender, RoutedEventArgs e)
         {
@@ -198,9 +187,7 @@ namespace AssetManagment.Pages
 
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            var vm = button?.CommandParameter as EmployeeViewModel;
-            if (vm != null)
+            if (sender is Button button && button.CommandParameter is EmployeeViewModel vm)
             {
                 var win = new Windows.EmployeeEditorWindow(_context, App.CurrentUser, vm.EmployeeID);
                 win.Owner = Window.GetWindow(this);
@@ -210,24 +197,27 @@ namespace AssetManagment.Pages
 
         private void BtnToggleStatus_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            var employee = button?.CommandParameter as EmployeeViewModel;
-            if (employee == null) return;
-
-            var result = MessageBox.Show($"Изменить статус сотрудника {employee.FullName}?", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result != MessageBoxResult.Yes) return;
-
-            var userToUpdate = _context.Users.FirstOrDefault(u => u.EmployeeID == employee.EmployeeID);
-            if (userToUpdate != null)
+            if (sender is Button button && button.CommandParameter is EmployeeViewModel employee)
             {
-                userToUpdate.IsActive = !userToUpdate.IsActive;
-                _context.SaveChanges();
-                RefreshData();
-                MessageBox.Show($"Статус сотрудника {employee.FullName} изменен.", "Успех");
-            }
-            else
-            {
-                MessageBox.Show($"Не найдена учетная запись для сотрудника {employee.FullName}.", "Ошибка");
+                var result = MessageBox.Show($"Изменить статус сотрудника {employee.FullName}?",
+                    "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result != MessageBoxResult.Yes) return;
+
+                var userToUpdate = _context.Users.FirstOrDefault(u => u.EmployeeID == employee.EmployeeID);
+                if (userToUpdate != null)
+                {
+                    userToUpdate.IsActive = !userToUpdate.IsActive;
+                    _context.SaveChanges();
+                    RefreshData();
+                    MessageBox.Show($"Статус сотрудника {employee.FullName} изменен.", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show($"Не найдена учетная запись для сотрудника {employee.FullName}.",
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
         }
 
@@ -235,48 +225,57 @@ namespace AssetManagment.Pages
         {
             if (App.CurrentUser?.RoleID != 1)
             {
-                MessageBox.Show("Эта операция доступна только Администратору.", "Доступ запрещен", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Эта операция доступна только Администратору.", "Доступ запрещен",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            var button = sender as Button;
-            var vm = button?.CommandParameter as EmployeeViewModel;
-            if (vm == null) return;
-
-            var result = MessageBox.Show($"Вы уверены, что хотите НАВСЕГДА удалить сотрудника '{vm.FullName}' и его учетную запись?\n\nЭто действие НЕОБРАТИМО!", "КРИТИЧЕСКОЕ ДЕЙСТВИЕ", MessageBoxButton.YesNo, MessageBoxImage.Error);
-            if (result != MessageBoxResult.Yes) return;
-
-            try
+            if (sender is Button button && button.CommandParameter is EmployeeViewModel vm)
             {
-                if (_context.Assets.Any(a => a.ResponsibleEmployeeID == vm.EmployeeID))
-                {
-                    MessageBox.Show("Невозможно удалить сотрудника, так как за ним закреплены активы. Сначала переназначьте их.", "Ошибка удаления", MessageBoxButton.OK, MessageBoxImage.Stop);
-                    return;
-                }
+                var result = MessageBox.Show(
+                    $"Вы уверены, что хотите НАВСЕГДА удалить сотрудника '{vm.FullName}' и его учетную запись?\n\nЭто действие НЕОБРАТИМО!",
+                    "⚠️ КРИТИЧЕСКОЕ ДЕЙСТВИЕ",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Error);
 
-                var userToDelete = _context.Users.FirstOrDefault(u => u.EmployeeID == vm.EmployeeID);
-                if (userToDelete != null)
-                {
-                    _context.Users.Remove(userToDelete);
-                }
+                if (result != MessageBoxResult.Yes) return;
 
-                var employeeToDelete = _context.Employees.Find(vm.EmployeeID);
-                if (employeeToDelete != null)
+                try
                 {
-                    _context.Employees.Remove(employeeToDelete);
-                }
+                    if (_context.Assets.Any(a => a.ResponsibleEmployeeID == vm.EmployeeID))
+                    {
+                        MessageBox.Show("Невозможно удалить сотрудника, так как за ним закреплены активы. Сначала переназначьте их.",
+                            "Ошибка удаления", MessageBoxButton.OK, MessageBoxImage.Stop);
+                        return;
+                    }
 
-                _context.SaveChanges();
-                MessageBox.Show("Сотрудник и его учетная запись были навсегда удалены.", "Успех");
-                RefreshData();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка");
+                    var userToDelete = _context.Users.FirstOrDefault(u => u.EmployeeID == vm.EmployeeID);
+                    if (userToDelete != null)
+                    {
+                        _context.Users.Remove(userToDelete);
+                    }
+
+                    var employeeToDelete = _context.Employees.Find(vm.EmployeeID);
+                    if (employeeToDelete != null)
+                    {
+                        _context.Employees.Remove(employeeToDelete);
+                    }
+
+                    _context.SaveChanges();
+                    MessageBox.Show("Сотрудник и его учетная запись были навсегда удалены.", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    RefreshData();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при удалении:\n\n{ex.Message}", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }
 
+    // === VIEWMODEL ===
     public class EmployeeViewModel
     {
         public int EmployeeID { get; set; }
@@ -288,7 +287,9 @@ namespace AssetManagment.Pages
         public DateTime HireDate { get; set; }
         public bool IsActive { get; set; }
         public byte[] Photo { get; set; }
+
         public string StatusText => IsActive ? "Активен" : "Неактивен";
+
         public string Initials
         {
             get
@@ -300,6 +301,7 @@ namespace AssetManagment.Pages
                 return FullName.FirstOrDefault().ToString().ToUpper();
             }
         }
+
         public BitmapImage ProfileImage
         {
             get

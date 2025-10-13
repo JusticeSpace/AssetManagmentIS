@@ -169,13 +169,15 @@ namespace AssetManagment.Windows
 
             try
             {
-                // Шаг 1: Подготавливаем объект Employee, но не добавляем в контекст
-                if (_employee == null)
+                // === СОЗДАНИЕ ИЛИ ОБНОВЛЕНИЕ СОТРУДНИКА ===
+                bool isNewEmployee = _employee == null || _employee.EmployeeID == 0;
+
+                if (isNewEmployee)
                 {
                     _employee = new Employees();
                 }
 
-                // Шаг 2: Полностью заполняем все его поля
+                // Заполняем поля
                 _employee.LastName = txtLastName.Text.Trim();
                 _employee.FirstName = txtFirstName.Text.Trim();
                 _employee.MiddleName = string.IsNullOrWhiteSpace(txtMiddleName.Text) ? null : txtMiddleName.Text.Trim();
@@ -184,75 +186,110 @@ namespace AssetManagment.Windows
                 _employee.PositionID = (int)cmbPosition.SelectedValue;
                 _employee.DepartmentID = (int)cmbDepartment.SelectedValue;
                 _employee.HireDate = dpHireDate.SelectedDate ?? DateTime.Now.Date;
-                _employee.IsActive = true; // Статус сотрудника всегда true, управляем через User.IsActive
+                _employee.IsActive = true;
 
-                // Шаг 3: Если сотрудник новый, добавляем его в контекст
-                if (_context.Entry(_employee).State == System.Data.Entity.EntityState.Detached)
+                // Добавляем в контекст только если новый
+                if (isNewEmployee)
                 {
                     _context.Employees.Add(_employee);
                 }
 
-                // Шаг 4: Обрабатываем учетную запись
+                // === ОБРАБОТКА УЧЕТНОЙ ЗАПИСИ ===
                 if (chkCreateAccount.IsChecked == true)
                 {
                     var username = txtUsername.Text.Trim();
-                    if (_context.Users.Any(u => u.Username == username && (_userAccount == null || u.UserID != _userAccount.UserID)))
+
+                    // ⚠️ КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Вынести UserID в локальную переменную
+                    int? currentUserId = _userAccount?.UserID;
+
+                    // Проверка уникальности логина
+                    var existingUser = _context.Users
+                        .FirstOrDefault(u => u.Username == username &&
+                                       (!currentUserId.HasValue || u.UserID != currentUserId.Value));
+
+                    if (existingUser != null)
                     {
                         ShowError("Пользователь с таким логином уже существует");
                         return;
                     }
 
-                    if (_userAccount == null) // Создаем новую учетку
-                    {
-                        if (string.IsNullOrWhiteSpace(txtPassword.Password)) { ShowError("Для новой учетной записи укажите пароль"); return; }
+                    bool isNewUser = _userAccount == null;
 
-                        // СНАЧАЛА СОХРАНЯЕМ СОТРУДНИКА, ЧТОБЫ ПОЛУЧИТЬ ID
-                        if (_employee.EmployeeID == 0)
+                    if (isNewUser)
+                    {
+                        // Для новой учетной записи пароль обязателен
+                        if (string.IsNullOrWhiteSpace(txtPassword.Password))
                         {
-                            _context.SaveChanges();
+                            ShowError("Для новой учетной записи укажите пароль");
+                            return;
                         }
 
+                        // СНАЧАЛА сохраняем сотрудника, чтобы получить EmployeeID
+                        _context.SaveChanges();
+
+                        // ТЕПЕРЬ создаем учетную запись с корректным EmployeeID
                         _userAccount = new Users
                         {
                             Username = username,
                             PasswordHash = GetMD5(txtPassword.Password),
-                            EmployeeID = _employee.EmployeeID, // Теперь ID есть!
+                            EmployeeID = _employee.EmployeeID,
                             RoleID = (int)cmbRole.SelectedValue,
                             IsActive = chkUserIsActive.IsChecked ?? true,
                             CreatedDate = DateTime.Now
                         };
                         _context.Users.Add(_userAccount);
                     }
-                    else // Обновляем существующую
+                    else
                     {
+                        // Обновляем существующую учетную запись
                         _userAccount.Username = username;
+
                         if (!string.IsNullOrWhiteSpace(txtPassword.Password))
+                        {
                             _userAccount.PasswordHash = GetMD5(txtPassword.Password);
+                        }
+
                         _userAccount.RoleID = (int)cmbRole.SelectedValue;
                         _userAccount.IsActive = chkUserIsActive.IsChecked ?? true;
                     }
                 }
-                else // Если галочка снята, деактивируем
+                else
                 {
-                    if (_userAccount != null) _userAccount.IsActive = false;
+                    // Если галочка снята - деактивируем учетную запись
+                    if (_userAccount != null)
+                    {
+                        _userAccount.IsActive = false;
+                    }
                 }
 
-                // Финальное сохранение
+                // Финальное сохранение всех изменений
                 _context.SaveChanges();
 
                 _isDirty = false;
+                MessageBox.Show("Сотрудник успешно сохранен!", "Успех",
+                               MessageBoxButton.OK, MessageBoxImage.Information);
                 DialogResult = true;
                 Close();
             }
-            // УЛУЧШЕННАЯ ОБРАБОТКА ОШИБОК
             catch (System.Data.Entity.Validation.DbEntityValidationException ex)
             {
-                var errorMessages = ex.EntityValidationErrors
-                    .SelectMany(x => x.ValidationErrors)
-                    .Select(x => $"- Поле '{x.PropertyName}': {x.ErrorMessage}");
-                var fullErrorMessage = string.Join("\n", errorMessages);
-                MessageBox.Show($"Ошибка валидации данных:\n\n{fullErrorMessage}", "Ошибка сохранения", MessageBoxButton.OK, MessageBoxImage.Error);
-                ShowError("Ошибка валидации (см. детали)");
+                var errors = new System.Text.StringBuilder();
+                foreach (var validationErrors in ex.EntityValidationErrors)
+                {
+                    foreach (var validationError in validationErrors.ValidationErrors)
+                    {
+                        errors.AppendLine($"• {validationError.PropertyName}: {validationError.ErrorMessage}");
+                    }
+                }
+
+                MessageBox.Show($"Ошибка валидации данных:\n\n{errors}",
+                               "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+            {
+                var innerMessage = ex.InnerException?.InnerException?.Message ?? ex.Message;
+                MessageBox.Show($"Ошибка сохранения в базу данных:\n\n{innerMessage}",
+                               "Ошибка БД", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {
@@ -261,8 +298,9 @@ namespace AssetManagment.Windows
                 {
                     innerException = innerException.InnerException;
                 }
-                MessageBox.Show($"Произошла непредвиденная ошибка:\n\n{innerException.Message}", "Ошибка сохранения", MessageBoxButton.OK, MessageBoxImage.Error);
-                ShowError($"Ошибка сохранения: {innerException.Message}");
+
+                MessageBox.Show($"Непредвиденная ошибка:\n\n{innerException.Message}",
+                               "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

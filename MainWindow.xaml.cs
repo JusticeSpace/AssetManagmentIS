@@ -38,25 +38,32 @@ namespace AssetManagment
 
             var employee = App.CurrentUser.Employees;
             txtUserName.Text = $"{employee.LastName} {employee.FirstName}";
-            txtUserRole.Text = App.CurrentUser.UserRoles.RoleName;
+            txtUserRole.Text = App.CurrentUser.UserRoles?.RoleName ?? "Пользователь";
 
             // Загрузка фото профиля
             if (employee.Photo != null && employee.Photo.Length > 0)
             {
-                using (var stream = new MemoryStream(employee.Photo))
+                try
                 {
-                    var image = new BitmapImage();
-                    image.BeginInit();
-                    image.CacheOption = BitmapCacheOption.OnLoad;
-                    image.StreamSource = stream;
-                    image.EndInit();
-                    image.Freeze();
-                    ProfilePhotoBrush.ImageSource = image;
+                    using (var stream = new MemoryStream(employee.Photo))
+                    {
+                        var image = new BitmapImage();
+                        image.BeginInit();
+                        image.CacheOption = BitmapCacheOption.OnLoad;
+                        image.StreamSource = stream;
+                        image.EndInit();
+                        image.Freeze();
+                        ProfilePhotoBrush.ImageSource = image;
+                    }
+                }
+                catch
+                {
+                    ProfilePhotoBrush.ImageSource = null;
                 }
             }
             else
             {
-                ProfilePhotoBrush.ImageSource = null; // Очищаем, если фото нет
+                ProfilePhotoBrush.ImageSource = null;
             }
         }
 
@@ -64,6 +71,7 @@ namespace AssetManagment
         {
             if (App.CurrentUser == null) return;
 
+            // Доступ к Сотрудникам только для Администратора и Менеджера
             btnEmployees.Visibility = (App.CurrentUser.RoleID == 1 || App.CurrentUser.RoleID == 2)
                 ? Visibility.Visible
                 : Visibility.Collapsed;
@@ -71,7 +79,8 @@ namespace AssetManagment
 
         private void UpdateDateTime()
         {
-            txtCurrentDateTime.Text = DateTime.Now.ToString("dd MMMM yyyy, HH:mm");
+            txtCurrentDateTime.Text = DateTime.Now.ToString("dd MMMM yyyy, HH:mm",
+                new System.Globalization.CultureInfo("ru-RU"));
         }
 
         private void TimeTimer_Tick(object sender, EventArgs e)
@@ -86,7 +95,8 @@ namespace AssetManagment
             UpdatePageInfo("ViewDashboard", "Панель управления", "Обзор системы и статистика");
         }
 
-        private void SetActiveButton(Button activeButton)
+        // === ПУБЛИЧНЫЕ МЕТОДЫ ДЛЯ ДОСТУПА ИЗ СТРАНИЦ ===
+        public void SetActiveButton(Button activeButton)
         {
             foreach (var child in MenuPanel.Children)
             {
@@ -101,13 +111,53 @@ namespace AssetManagment
             }
         }
 
-        private void UpdatePageInfo(string iconKind, string title, string subtitle)
+        public void UpdatePageInfo(string iconKind, string title, string subtitle)
         {
-            PageIcon.Kind = (MaterialDesignThemes.Wpf.PackIconKind)Enum.Parse(typeof(MaterialDesignThemes.Wpf.PackIconKind), iconKind);
-            PageTitle.Text = title;
-            PageSubtitle.Text = subtitle;
+            try
+            {
+                PageIcon.Kind = (MaterialDesignThemes.Wpf.PackIconKind)Enum.Parse(
+                    typeof(MaterialDesignThemes.Wpf.PackIconKind), iconKind);
+                PageTitle.Text = title;
+                PageSubtitle.Text = subtitle;
+            }
+            catch
+            {
+                PageTitle.Text = title;
+                PageSubtitle.Text = subtitle;
+            }
         }
 
+        // === УНИВЕРСАЛЬНЫЙ МЕТОД НАВИГАЦИИ ===
+        public void NavigateToPage(string pageName)
+        {
+            try
+            {
+                switch (pageName)
+                {
+                    case "Dashboard":
+                        NavigateToDashboard();
+                        break;
+                    case "Assets":
+                        BtnAssets_Click(null, null);
+                        break;
+                    case "Employees":
+                        BtnEmployees_Click(null, null);
+                        break;
+                    case "Profile":
+                        BtnProfile_Click(null, null);
+                        break;
+                    default:
+                        MessageBox.Show($"Страница '{pageName}' не найдена", "Ошибка навигации");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка навигации: {ex.Message}", "Ошибка");
+            }
+        }
+
+        // === ОБРАБОТЧИКИ КНОПОК МЕНЮ ===
         private void BtnDashboard_Click(object sender, RoutedEventArgs e)
         {
             NavigateToDashboard();
@@ -117,7 +167,8 @@ namespace AssetManagment
         {
             MainFrame.Navigate(new AssetsPage(_context, App.CurrentUser));
             SetActiveButton(btnAssets);
-            UpdatePageInfo("PackageVariantClosed", "Управление активами", "Просмотр и редактирование активов");
+            UpdatePageInfo("PackageVariantClosed", "Управление активами",
+                "Просмотр и редактирование активов");
         }
 
         private void BtnEmployees_Click(object sender, RoutedEventArgs e)
@@ -131,36 +182,60 @@ namespace AssetManagment
         {
             MainFrame.Navigate(new ProfilePage());
             SetActiveButton(null);
-            UpdatePageInfo("Account", "Профиль пользователя", "Управление личной информацией");
+            UpdatePageInfo("Account", "Профиль пользователя",
+                "Управление личной информацией");
         }
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
-            if (MainFrame.Content is AssetsPage assetsPage)
+            try
             {
-                assetsPage.RefreshData();
+                if (MainFrame.Content is AssetsPage assetsPage)
+                {
+                    assetsPage.RefreshData();
+                }
+                else if (MainFrame.Content is EmployeesPage employeesPage)
+                {
+                    employeesPage.RefreshData();
+                }
+                else if (MainFrame.Content is DashboardPage)
+                {
+                    NavigateToDashboard();
+                }
+                else if (MainFrame.Content is ProfilePage profilePage)
+                {
+                    // Перезагрузка профиля
+                    MainFrame.Navigate(new ProfilePage());
+                }
+                else
+                {
+                    // Обновление текущей страницы
+                    MainFrame.Refresh();
+                }
             }
-            else if (MainFrame.Content is EmployeesPage employeesPage)
+            catch (Exception ex)
             {
-                employeesPage.RefreshData();
-            }
-            else if (MainFrame.Content is DashboardPage)
-            {
-                // Для DashboardPage можно просто пересоздать страницу для обновления
-                NavigateToDashboard();
+                MessageBox.Show($"Ошибка обновления: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show("Вы действительно хотите выйти из системы?",
-                "Подтверждение выхода", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show(
+                "Вы действительно хотите выйти из системы?",
+                "Подтверждение выхода",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
             if (result == MessageBoxResult.Yes)
             {
                 App.CurrentUser = null;
                 _timeTimer?.Stop();
                 _context?.Dispose();
-                new Windows.LoginWindow().Show();
+
+                var loginWindow = new Windows.LoginWindow();
+                loginWindow.Show();
                 Close();
             }
         }

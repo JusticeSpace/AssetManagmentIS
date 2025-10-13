@@ -26,6 +26,11 @@
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Margin" Value="8,0"/>
         </Style>
+        <Style x:Key="PopupButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="16,0"/>
+        </Style>
     </Page.Resources>
 
     <Grid Margin="32">
@@ -34,14 +39,13 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Margin="0,0,0,24">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" Style="{StaticResource CardStyle}" Padding="24" Margin="0,0,12,0">
+
+        <!-- ============================================ -->
+        <!-- СТАТИСТИКА -->
+        <!-- ============================================ -->
+        <UniformGrid Grid.Row="0" Rows="1" Columns="4" Margin="0,0,0,24">
+            <!-- Всего сотрудников -->
+            <Border Style="{StaticResource CardStyle}" Padding="24" Margin="0,0,12,0">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -56,7 +60,9 @@
                     </Border>
                 </Grid>
             </Border>
-            <Border Grid.Column="1" Style="{StaticResource CardStyle}" Padding="24" Margin="6,0">
+
+            <!-- Активных -->
+            <Border Style="{StaticResource CardStyle}" Padding="24" Margin="6,0">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -71,7 +77,9 @@
                     </Border>
                 </Grid>
             </Border>
-            <Border Grid.Column="2" Style="{StaticResource CardStyle}" Padding="24" Margin="6,0">
+
+            <!-- Отделов -->
+            <Border Style="{StaticResource CardStyle}" Padding="24" Margin="6,0">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -86,7 +94,9 @@
                     </Border>
                 </Grid>
             </Border>
-            <Border Grid.Column="3" Style="{StaticResource CardStyle}" Padding="24" Margin="12,0,0,0">
+
+            <!-- Новых за месяц -->
+            <Border Style="{StaticResource CardStyle}" Padding="24" Margin="12,0,0,0">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -101,7 +111,11 @@
                     </Border>
                 </Grid>
             </Border>
-        </Grid>
+        </UniformGrid>
+
+        <!-- ============================================ -->
+        <!-- ШАПКА -->
+        <!-- ============================================ -->
         <Border Grid.Row="1" Style="{StaticResource CardStyle}" Padding="32" Margin="0,0,0,24">
             <Grid>
                 <Grid.RowDefinitions>
@@ -169,11 +183,18 @@
             </Grid>
         </Border>
 
+        <!-- ============================================ -->
+        <!-- ТАБЛИЦА -->
+        <!-- ============================================ -->
         <Border Grid.Row="2" Style="{StaticResource CardStyle}" Padding="0">
-            <DataGrid x:Name="dgEmployees" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="None" SelectionMode="Single" Background="Transparent" materialDesign:DataGridAssist.CellPadding="16 12" materialDesign:DataGridAssist.ColumnHeaderPadding="16 12">
+            <DataGrid x:Name="dgEmployees" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                      HeadersVisibility="Column" GridLinesVisibility="None" SelectionMode="Single" Background="Transparent" 
+                      materialDesign:DataGridAssist.CellPadding="16 12" materialDesign:DataGridAssist.ColumnHeaderPadding="16 12"
+                      MouseDoubleClick="DgEmployees_MouseDoubleClick">
                 <DataGrid.Resources>
                     <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
                         <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Cursor" Value="Hand"/>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="#F8FAFC"/>
@@ -192,16 +213,48 @@
                     </Style>
                 </DataGrid.Resources>
                 <DataGrid.Columns>
+                    <!-- СОТРУДНИК -->
                     <DataGridTemplateColumn Header="СОТРУДНИК" Width="*" MinWidth="320">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <!-- ИЗМЕНЕНИЕ: Ellipse с ImageBrush для фото -->
-                                    <Ellipse Width="48" Height="48" Margin="0,0,16,0">
-                                        <Ellipse.Fill>
-                                            <ImageBrush ImageSource="{Binding ProfileImage}" Stretch="UniformToFill"/>
-                                        </Ellipse.Fill>
-                                    </Ellipse>
+                                    <!-- ИСПРАВЛЕННЫЙ БЛОК ФОТО -->
+                                    <Grid Width="48" Height="48" Margin="0,0,16,0">
+                                        <!-- Фото если есть -->
+                                        <Ellipse>
+                                            <Ellipse.Style>
+                                                <Style TargetType="Ellipse">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ProfileImage}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Ellipse.Style>
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{Binding ProfileImage}" Stretch="UniformToFill"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+
+                                        <!-- Инициалы если нет фото -->
+                                        <Border CornerRadius="24" Background="#EEF2FF">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ProfileImage}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="{Binding Initials}" FontSize="16" FontWeight="Bold" 
+                                                       Foreground="#6366F1" HorizontalAlignment="Center" 
+                                                       VerticalAlignment="Center"/>
+                                        </Border>
+                                    </Grid>
+
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="{Binding FullName}" FontSize="14" FontWeight="SemiBold" Foreground="#1F2937"/>
                                         <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
@@ -213,6 +266,8 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
+
+                    <!-- ДОЛЖНОСТЬ -->
                     <DataGridTemplateColumn Header="ДОЛЖНОСТЬ" Width="250">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -223,6 +278,8 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
+
+                    <!-- ТЕЛЕФОН -->
                     <DataGridTextColumn Header="ТЕЛЕФОН" Binding="{Binding Phone}" Width="200">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
@@ -230,6 +287,8 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
+
+                    <!-- ДАТА НАЙМА -->
                     <DataGridTextColumn Header="ДАТА НАЙМА" Binding="{Binding HireDate, StringFormat=dd.MM.yyyy}" Width="150">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
@@ -237,6 +296,8 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
+
+                    <!-- СТАТУС -->
                     <DataGridTemplateColumn Header="СТАТУС" Width="140">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -267,19 +328,35 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
+
+                    <!-- ДЕЙСТВИЯ -->
                     <DataGridTemplateColumn Width="120">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <Button x:Name="BtnEdit" Style="{StaticResource MaterialDesignIconButton}" Width="32" Height="32" ToolTip="Редактировать" CommandParameter="{Binding}" Click="BtnEdit_Click">
-                                        <materialDesign:PackIcon Kind="Pencil" Width="18" Height="18"/>
-                                    </Button>
-                                    <Button x:Name="BtnToggleStatus" Style="{StaticResource MaterialDesignIconButton}" Width="32" Height="32" ToolTip="Изменить статус" CommandParameter="{Binding}" Click="BtnToggleStatus_Click">
-                                        <materialDesign:PackIcon Kind="AccountSwitch" Width="18" Height="18"/>
-                                    </Button>
-                                    <Button x:Name="BtnDeleteEmployee" Style="{StaticResource MaterialDesignIconButton}" Width="32" Height="32" ToolTip="Удалить навсегда" CommandParameter="{Binding}" Click="BtnDelete_Click">
-                                        <materialDesign:PackIcon Kind="DeleteForever" Width="18" Height="18" Foreground="#EF4444"/>
-                                    </Button>
+                                    <materialDesign:PopupBox PlacementMode="BottomAndAlignRightEdges" StaysOpen="False" Width="32" Height="32">
+                                        <StackPanel Width="200">
+                                            <Button x:Name="BtnEdit" Style="{StaticResource PopupButtonStyle}" Click="BtnEdit_Click" CommandParameter="{Binding}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <materialDesign:PackIcon Kind="Pencil" VerticalAlignment="Center" Margin="0,0,12,0" Foreground="#475569"/>
+                                                    <TextBlock Text="Редактировать"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button x:Name="BtnToggleStatus" Style="{StaticResource PopupButtonStyle}" Click="BtnToggleStatus_Click" CommandParameter="{Binding}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <materialDesign:PackIcon Kind="AccountSwitch" VerticalAlignment="Center" Margin="0,0,12,0" Foreground="#F59E0B"/>
+                                                    <TextBlock Text="Изменить статус"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Separator Margin="0,8"/>
+                                            <Button x:Name="BtnDeleteEmployee" Style="{StaticResource PopupButtonStyle}" Foreground="#EF4444" Click="BtnDelete_Click" CommandParameter="{Binding}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <materialDesign:PackIcon Kind="DeleteForever" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                                    <TextBlock Text="Удалить навсегда"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+                                    </materialDesign:PopupBox>
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace AssetManagment.Pages
 {
@@ -17,9 +15,16 @@ namespace AssetManagment.Pages
         public DashboardPage(AssetControlDBEntities context, Users currentUser)
         {
             InitializeComponent();
-            _context = context;
-            _currentUser = currentUser;
+            _context = context ?? new AssetControlDBEntities();
+            _currentUser = currentUser ?? App.CurrentUser;
+
+            Loaded += DashboardPage_Loaded;
+        }
+
+        private void DashboardPage_Loaded(object sender, RoutedEventArgs e)
+        {
             LoadDashboardData();
+            ConfigureUIByRole();
         }
 
         private void LoadDashboardData()
@@ -28,11 +33,12 @@ namespace AssetManagment.Pages
             {
                 LoadWelcomeMessage();
                 LoadAssetStatistics();
-                LoadRecentActions();
+                LoadAdditionalStatistics();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка загрузки данных Dashboard:\n\n{ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -40,136 +46,132 @@ namespace AssetManagment.Pages
         {
             if (_currentUser?.Employees != null)
             {
-                txtWelcome.Text = $"Добро пожаловать, {_currentUser.Employees.FirstName}!";
+                var employee = _currentUser.Employees;
+                string fullName = $"{employee.FirstName} {employee.LastName}";
+                txtWelcome.Text = $"Добро пожаловать, {fullName}!";
             }
-            txtLastUpdate.Text = $"Статистика на {DateTime.Now:dd MMMM, HH:mm}";
+            else if (_currentUser != null)
+            {
+                txtWelcome.Text = $"Добро пожаловать, {_currentUser.Username}!";
+            }
+            else
+            {
+                txtWelcome.Text = "Добро пожаловать!";
+            }
+
+            if (_currentUser?.UserRoles != null)
+            {
+                txtUserRole.Text = _currentUser.UserRoles.RoleName;
+            }
+            else
+            {
+                txtUserRole.Text = "Пользователь";
+            }
+
+            txtCurrentDate.Text = DateTime.Now.ToString("dddd, d MMMM yyyy",
+                new System.Globalization.CultureInfo("ru-RU"));
         }
 
         private void LoadAssetStatistics()
         {
-            // --- ИСПРАВЛЕНИЕ ---
-            // Вычисляем дату месяц назад ЗА ПРЕДЕЛАМИ LINQ-запроса
             var oneMonthAgo = DateTime.Now.AddMonths(-1);
+            var allAssets = _context.Assets.Where(a => a.IsActive == true).ToList();
+            var totalAssets = allAssets.Count;
 
-            var allAssetsQuery = _context.Assets.Where(a => a.IsActive == true);
-            var totalAssetsCount = allAssetsQuery.Count();
+            var activeAssets = allAssets.Count(a => a.StatusID == 1);
+            var inRepairAssets = allAssets.Count(a => a.StatusID == 3);
+            var disposedAssets = _context.Assets.Count(a => a.StatusID == 4);
 
-            var activeAssetsCount = allAssetsQuery.Count(a => a.StatusID == 1);
-            var inRepairAssetsCount = allAssetsQuery.Count(a => a.StatusID == 3); // На ремонте
-            var disposedAssetsCount = _context.Assets.Count(a => a.StatusID == 4); // Списанные
+            txtTotalAssets.Text = totalAssets.ToString();
+            txtActiveAssets.Text = activeAssets.ToString();
+            txtInRepair.Text = inRepairAssets.ToString();
+            txtDisposed.Text = disposedAssets.ToString();
 
-            txtTotalAssets.Text = totalAssetsCount.ToString();
-            txtActiveAssets.Text = activeAssetsCount.ToString();
-            txtInRepair.Text = inRepairAssetsCount.ToString();
-            txtDisposed.Text = disposedAssetsCount.ToString();
-
-            if (totalAssetsCount > 0)
+            if (totalAssets > 0)
             {
-                progressActive.Value = (double)activeAssetsCount / totalAssetsCount * 100;
-                progressRepair.Value = (double)inRepairAssetsCount / totalAssetsCount * 100;
-                txtActiveAssetsPercent.Text = $"{progressActive.Value:F1}% от общего числа";
+                double activePercent = (double)activeAssets / totalAssets * 100;
+                double repairPercent = (double)inRepairAssets / totalAssets * 100;
+
+                txtActiveAssetsPercent.Text = $"{activePercent:F1}% от общего";
+
+                // Если progressActive это ProgressBar
+                progressActive.Value = activePercent;
+                progressRepair.Value = repairPercent;
+            }
+            else
+            {
+                txtActiveAssetsPercent.Text = "Нет данных";
+                progressActive.Value = 0;
+                progressRepair.Value = 0;
             }
 
-            var totalWithDisposed = totalAssetsCount + disposedAssetsCount;
+            var totalWithDisposed = totalAssets + disposedAssets;
             if (totalWithDisposed > 0)
             {
-                progressDisposed.Value = (double)disposedAssetsCount / totalWithDisposed * 100;
+                progressDisposed.Value = (double)disposedAssets / totalWithDisposed * 100;
             }
 
-            // --- ИСПРАВЛЕНИЕ ---
-            // Теперь используем переменную `oneMonthAgo` в запросе
-            var lastMonthAssets = allAssetsQuery.Count(a => a.CreatedDate >= oneMonthAgo);
-
-            txtTotalAssetsChange.Text = lastMonthAssets > 0 ? $"+{lastMonthAssets} за месяц" : "Без изменений";
-            txtTotalAssetsChange.Foreground = lastMonthAssets > 0
-                ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981"))
-                : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6B7280"));
+            var recentAssets = allAssets.Count(a => a.CreatedDate.HasValue && a.CreatedDate.Value >= oneMonthAgo);
+            txtTotalAssetsChange.Text = recentAssets > 0 ? $"+{recentAssets} за месяц" : "В системе";
         }
 
-        private void LoadRecentActions()
+        private void LoadAdditionalStatistics()
         {
-            var recentActions = new List<RecentAction>();
+            // Сотрудники и отделы
+            txtTotalEmployees.Text = _context.Employees.Count(e => e.IsActive == true).ToString();
+            txtTotalDepartments.Text = _context.Departments.Count().ToString();
 
-            var recentAssets = _context.Assets
-                .OrderByDescending(a => a.CreatedDate)
-                .Take(5)
-                .ToList();
-            foreach (var asset in recentAssets)
-            {
-                recentActions.Add(new RecentAction
-                {
-                    Icon = "Package",
-                    IconColor = "#10B981",
-                    IconBackgroundColor = "#ECFDF5",
-                    Action = "Добавлен актив",
-                    Description = asset.AssetName,
-                    Time = GetRelativeTime(asset.CreatedDate ?? DateTime.Now)
-                });
-            }
-
-            var needAttentionAssets = _context.Assets
-                .Where(a => a.StatusID == 3) // На ремонте
-                .OrderByDescending(a => a.ModifiedDate)
-                .Take(3)
-                .ToList();
-            foreach (var asset in needAttentionAssets)
-            {
-                recentActions.Add(new RecentAction
-                {
-                    Icon = "AlertCircle",
-                    IconColor = "#F59E0B",
-                    IconBackgroundColor = "#FEF3C7",
-                    Action = "Требует внимания",
-                    Description = asset.AssetName,
-                    Time = GetRelativeTime(asset.ModifiedDate ?? DateTime.Now)
-                });
-            }
-
-            RecentActionsItemsControl.ItemsSource = recentActions
-                .OrderByDescending(a => a.Time == "Только что" ? DateTime.MaxValue : (a.Time.Contains("мин") ? DateTime.Now.AddMinutes(-1) : DateTime.MinValue))
-                .Take(8);
+            // === ИСПРАВЛЕНО: Используем правильное название таблицы ===
+            txtTotalCategories.Text = _context.Categories.Count().ToString();
+            txtTotalLocations.Text = _context.Locations.Count().ToString();
         }
 
-        private string GetRelativeTime(DateTime dateTime)
+        private void ConfigureUIByRole()
         {
-            var timeSpan = DateTime.Now - dateTime;
-            if (timeSpan.TotalMinutes < 1) return "Только что";
-            if (timeSpan.TotalMinutes < 60) return $"{(int)timeSpan.TotalMinutes} мин назад";
-            if (timeSpan.TotalHours < 24) return $"{(int)timeSpan.TotalHours} ч назад";
-            if (timeSpan.TotalDays < 30) return $"{(int)timeSpan.TotalDays} дн назад";
-            return dateTime.ToString("dd.MM.yyyy");
+            if (_currentUser == null) return;
+
+            bool canAccessEmployees = _currentUser.RoleID == 1 || _currentUser.RoleID == 2;
+
+            if (!canAccessEmployees)
+            {
+                btnGoToEmployees.Visibility = Visibility.Collapsed;
+                Grid.SetColumnSpan(btnGoToAssets, 2);
+            }
+            else
+            {
+                btnGoToEmployees.Visibility = Visibility.Visible;
+                Grid.SetColumnSpan(btnGoToAssets, 1);
+            }
         }
 
-        // --- Обработчики кнопок (остаются без изменений) ---
-        private void BtnAddAsset_Click(object sender, RoutedEventArgs e)
+        private void BtnGoToAssets_Click(object sender, RoutedEventArgs e)
         {
             var mainWindow = Window.GetWindow(this) as MainWindow;
-            mainWindow?.MainFrame.Navigate(new AssetsPage(_context, _currentUser));
+            if (mainWindow != null)
+            {
+                mainWindow.MainFrame.Navigate(new AssetsPage(_context, _currentUser));
+                mainWindow.SetActiveButton(mainWindow.btnAssets);
+                mainWindow.UpdatePageInfo("PackageVariantClosed", "Управление активами",
+                    "Просмотр и редактирование активов");
+            }
         }
 
-        private void BtnExportReport_Click(object sender, RoutedEventArgs e)
+        private void BtnGoToEmployees_Click(object sender, RoutedEventArgs e)
         {
-            // Логика экспорта
-        }
+            if (_currentUser == null || (_currentUser.RoleID != 1 && _currentUser.RoleID != 2))
+            {
+                MessageBox.Show("Доступ к разделу 'Сотрудники' ограничен. Требуются права Администратора или Менеджера.",
+                    "Доступ запрещён", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-        private void BtnNotifications_Click(object sender, RoutedEventArgs e)
-        {
-            // Логика уведомлений
+            var mainWindow = Window.GetWindow(this) as MainWindow;
+            if (mainWindow != null)
+            {
+                mainWindow.MainFrame.Navigate(new EmployeesPage());
+                mainWindow.SetActiveButton(mainWindow.btnEmployees);
+                mainWindow.UpdatePageInfo("AccountGroup", "Сотрудники", "Управление персоналом");
+            }
         }
-
-        private void BtnHelp_Click(object sender, RoutedEventArgs e)
-        {
-            // Логика справки
-        }
-    }
-
-    public class RecentAction
-    {
-        public string Icon { get; set; }
-        public string IconColor { get; set; }
-        public string IconBackgroundColor { get; set; }
-        public string Action { get; set; }
-        public string Description { get; set; }
-        public string Time { get; set; }
     }
 }

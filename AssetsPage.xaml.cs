@@ -4,10 +4,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Win32;
 
 namespace AssetManagment.Pages
 {
@@ -108,8 +106,8 @@ namespace AssetManagment.Pages
 
                 var results = _context.vw_AssetsFullInfo
                                       .Where(v => pagedAssetIds.Contains(v.AssetID))
-                                      .AsEnumerable() // Переходим в LINQ to Objects
-                                      .OrderByDescending(v => pagedAssetIds.IndexOf(v.AssetID)) // Сохраняем порядок
+                                      .AsEnumerable()
+                                      .OrderByDescending(v => pagedAssetIds.IndexOf(v.AssetID))
                                       .ToList();
 
                 _assets.Clear();
@@ -129,14 +127,21 @@ namespace AssetManagment.Pages
             }
         }
 
+        // === ИСПРАВЛЕННЫЙ МЕТОД РАЗГРАНИЧЕНИЯ ПРАВ ===
         private void ApplyRolePermissions()
         {
-            bool isManagerOrAdmin = CanEdit(false);
+            var user = _currentUser ?? App.CurrentUser;
+            bool isManagerOrAdmin = user != null && (user.RoleID == 1 || user.RoleID == 2);
 
+            // Скрываем кнопки управления для обычных пользователей
             btnAdd.Visibility = isManagerOrAdmin ? Visibility.Visible : Visibility.Collapsed;
             btnEdit.Visibility = isManagerOrAdmin ? Visibility.Visible : Visibility.Collapsed;
             btnDelete.Visibility = isManagerOrAdmin ? Visibility.Visible : Visibility.Collapsed;
 
+            // === НОВОЕ: Скрываем кнопку управления категориями ===
+            btnManageCategories.Visibility = isManagerOrAdmin ? Visibility.Visible : Visibility.Collapsed;
+
+            // Скрываем колонку действий в таблице
             var actionsColumn = dgAssets.Columns.LastOrDefault();
             if (actionsColumn != null)
             {
@@ -212,6 +217,35 @@ namespace AssetManagment.Pages
             var result = MessageBox.Show($"Вы уверены, что хотите списать {selectedItems.Count} актив(ов)?", "Подтверждение списания", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result != MessageBoxResult.Yes) return;
             DisposeAssets(selectedItems.Select(i => i.FullInfo.AssetID).ToList());
+        }
+
+        // === НОВЫЙ МЕТОД: Управление категориями ===
+        private void BtnManageCategories_Click(object sender, RoutedEventArgs e)
+        {
+            if (!CanEdit())
+            {
+                MessageBox.Show("Управление категориями доступно только Администратору и Менеджеру.",
+                    "Доступ запрещён", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                var win = new Windows.CategoryManagerWindow(_context, _currentUser ?? App.CurrentUser);
+                win.Owner = Window.GetWindow(this);
+
+                if (win.ShowDialog() == true)
+                {
+                    LoadFilters();
+                    RefreshData();
+                    ShowNotification("Данные обновлены после изменения категорий");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка открытия окна управления категориями:\n\n{ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void BtnDisposeItem_Click(object sender, RoutedEventArgs e)
@@ -304,7 +338,11 @@ namespace AssetManagment.Pages
         private void UpdateSelectionInfo()
         {
             var selectedCount = _assets.Count(a => a.IsSelected);
-            txtSelectionInfo.Text = selectedCount > 0 ? $"Выбрано: {selectedCount}" : "";
+            txtSelectionInfo.Text = selectedCount > 0 ? $"Выбрано активов: {selectedCount}" : "";
+
+            // Показываем/скрываем панель информации о выборе
+            selectionInfoPanel.Visibility = selectedCount > 0 ? Visibility.Visible : Visibility.Collapsed;
+
             btnClearSelection.Visibility = selectedCount > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 

@@ -178,6 +178,9 @@
     <Compile Include="Windows\AssetEditorWindow.xaml.cs">
       <DependentUpon>AssetEditorWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\CategoryManagerWindow.xaml.cs">
+      <DependentUpon>CategoryManagerWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\EmployeeEditorWindow.xaml.cs">
       <DependentUpon>EmployeeEditorWindow.xaml</DependentUpon>
     </Compile>
@@ -221,6 +224,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\AssetEditorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\CategoryManagerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
